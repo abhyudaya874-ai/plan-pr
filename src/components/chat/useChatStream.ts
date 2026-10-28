@@ -101,8 +101,14 @@ export function applyEvent(turn: Turn, ev: Ev): Turn {
       const steps = turn.steps.filter((x) => !(x.kind === s.kind && x.t === s.t));
       return { ...turn, steps: [...steps, s] };
     }
-    case "source":
-      return { ...turn, sources: [...turn.sources, (ev as unknown as { source: SourceRef }).source] };
+    case "source": {
+      const s = (ev as unknown as { source: SourceRef }).source;
+      // the registry re-emits on re-registration (e.g. fetch_url of a search hit)
+      if (turn.sources.some((x) => x.canonicalUrl === s.canonicalUrl || x.n === s.n)) {
+        return turn;
+      }
+      return { ...turn, sources: [...turn.sources, s] };
+    }
     case "token":
       return { ...turn, text: turn.text + String(ev.text ?? "") };
     case "tool_call":

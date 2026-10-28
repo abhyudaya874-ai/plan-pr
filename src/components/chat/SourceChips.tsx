@@ -9,7 +9,8 @@ import type { SourceRef } from "./useChatStream";
  */
 export function SourceChips({ sources, cited }: { sources: SourceRef[]; cited: number[] }) {
   const [open, setOpen] = useState<number | null>(null);
-  const list = sources.filter((s) => cited.includes(s.n));
+  const seen = new Set<number>();
+  const list = sources.filter((s) => cited.includes(s.n) && !seen.has(s.n) && seen.add(s.n));
   if (!list.length) return null;
   return (
     <div className="mt-3 flex flex-wrap items-center gap-1.5">

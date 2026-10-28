@@ -105,6 +105,7 @@ export async function runLoop(
   const sourceRegistry = new SourceRegistry();
   let snapDone = false;
   const fileChanges: FileChange[] = [];
+  const emittedSources = new Set<string>();
 
   const toolDefs: ToolDef[] | undefined = params.useTools
     ? [...tools.values()].map((t) => t.def)
@@ -290,8 +291,11 @@ export async function runLoop(
           content: `<tool_result tool="${call.name}" untrusted="true">${exec.resultText}</tool_result>`,
         });
         // Web evidence: surface sources BEFORE the answer continues streaming.
+        // Re-registrations (same canonicalUrl) are deduped: emit each once.
         const execSources = (exec.data?.sources ?? []) as SourceRef[];
         for (const s of execSources) {
+          if (emittedSources.has(s.canonicalUrl)) continue;
+          emittedSources.add(s.canonicalUrl);
           sse.emit({ type: "source", source: s });
         }
         // File changes: unified diff per file, capped for the wire.
