@@ -248,8 +248,15 @@ async function handle(
     workspaceFiles: files,
     previousBridgeAngle: previousBridge,
   });
+  // Degraded previous turn? The work log with real tool outcomes is already in
+  // history — tell the model to synthesize from it, not re-run tools.
+  const lastAssistant = [...history].reverse().find((m) => m.role === "assistant");
+  const degradedRetry = (lastAssistant?.content ?? "").includes("Degraded completion");
   const systemPrompt =
     buildSystemPrompt(ctx) +
+    (degradedRetry
+      ? "\n\nNOTE: the previous turn's tool results are already in the conversation above (the \"Work log\"). Do NOT re-call tools unless new data is genuinely needed — write the answer directly from that work."
+      : "") +
     (intent.needsTools || route !== "chat"
       ? `\n\nIf you cannot call tools natively, reply with ONLY {"action":"<tool>","args":{...}} to invoke one.`
       : "");

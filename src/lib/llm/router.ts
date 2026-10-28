@@ -141,7 +141,9 @@ export class ModelRouter {
   private markFailure(m: ModelEntry) {
     const prev = this.cooldowns.get(m.key);
     const failures = (prev?.failures ?? 0) + 1;
-    const backoff = Math.min(60_000, 5_000 * 2 ** (failures - 1));
+    // base 15s: within a multi-round turn a 5s cooldown expired before the next
+    // round, letting the same rate-limited model burn every round's attempt
+    const backoff = Math.min(120_000, 15_000 * 2 ** (failures - 1));
     this.cooldowns.set(m.key, { until: this.now() + backoff, failures });
   }
 
