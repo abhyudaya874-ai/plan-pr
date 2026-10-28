@@ -112,8 +112,11 @@ export async function runLoop(
     : undefined;
 
   let stepCounter = 0;
-  const emitStep = (kind: StepKind, label: string, status: "running" | "done" | "error", detail?: string) =>
-    sse.emit({ type: "step", kind, label, detail, status, t: stepCounter++ });
+  const emitStep = (kind: StepKind, label: string, status: "running" | "done" | "error", detail?: string, t?: number) => {
+    const tt = t ?? stepCounter++;
+    sse.emit({ type: "step", kind, label, detail, status, t: tt });
+    return tt;
+  };
 
   // Text flushing with a tail hold-back so the ↪ bridge is never emitted as
   // answer tokens: keep the tail until the stream ends.
@@ -150,18 +153,31 @@ export async function runLoop(
     const pendingCalls: { id: string; name: string; argsJson: string }[] = [];
     let sawDone = false;
     let failed = false;
+    // Reasoning models emit hundreds of reasoning deltas: collapse to ONE
+    // running step, closed on first content/tool call.
+    let thinkT: number | null = null;
+    const closeThink = () => {
+      if (thinkT == null) return;
+      sse.emit({ type: "step", kind: "think", label: "Thinking", status: "done", t: thinkT });
+      thinkT = null;
+    };
 
     for await (const ev of router.chat(req, params.route, mode, { signal })) {
       if (signal?.aborted) return result;
       switch (ev.type) {
         case "text":
+          closeThink();
           roundText += ev.text;
           flushText(ev.text);
           break;
         case "reasoning":
-          emitStep("think", "Thinking", "done");
+          if (thinkT == null) {
+            thinkT = stepCounter++;
+            sse.emit({ type: "step", kind: "think", label: "Thinking", status: "running", t: thinkT });
+          }
           break;
         case "tool_call":
+          closeThink();
           pendingCalls.push(ev.call);
           sse.emit({
             type: "tool_call",
@@ -192,6 +208,7 @@ export async function runLoop(
           break;
       }
     }
+    closeThink();
     void sawDone;
 
     // json-action fallback for models without native tool calling.
@@ -235,7 +252,7 @@ export async function runLoop(
         } catch {
           parsedArgs = { __unparsed: call.argsJson };
         }
-        emitStep(stepKind, stepLabel(call.name, parsedArgs), "running");
+        const stepT = emitStep(stepKind, stepLabel(call.name, parsedArgs), "running");
 
         if (!tool) {
           messages.push({
@@ -245,7 +262,7 @@ export async function runLoop(
             content: JSON.stringify({ error: `unknown tool ${call.name}` }),
           });
           sse.emit({ type: "tool_result", toolCallId: call.id, ok: false, summary: `unknown tool ${call.name}` });
-          emitStep(stepKind, stepLabel(call.name, parsedArgs), "error");
+          emitStep(stepKind, stepLabel(call.name, parsedArgs), "error", undefined, stepT);
           result.toolCallsMade.push({ name: call.name, ok: false });
           return;
         }
@@ -327,7 +344,7 @@ export async function runLoop(
           emitStep("think", "Possible prompt-injection in fetched content (flagged)", "done");
         }
         sse.emit({ type: "tool_result", toolCallId: call.id, ok: exec.ok, summary: summarize(exec.resultText) });
-        emitStep(stepKind, stepLabel(call.name, parsedArgs), exec.ok ? "done" : "error");
+        emitStep(stepKind, stepLabel(call.name, parsedArgs), exec.ok ? "done" : "error", undefined, stepT);
       }),
     );
   }
