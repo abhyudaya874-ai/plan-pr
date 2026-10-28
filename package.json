@@ -16,7 +16,8 @@
     "planner:fixtures": "tsx scripts/planner-fixtures.ts",
     "redteam": "tsx scripts/redteam.ts",
     "eval": "tsx scripts/eval.ts",
-    "repro": "tsx scripts/repro.ts"
+    "repro": "tsx scripts/repro.ts",
+    "deck": "tsx scripts/deck.ts"
   },
   "dependencies": {
     "@tavily/core": "0.7.14",
