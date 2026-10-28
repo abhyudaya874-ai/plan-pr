@@ -11,13 +11,14 @@ import {
 } from "@/lib/db";
 import { buildSessionContext } from "@/lib/agent/context";
 import { classifyWithLlm, routeByHeuristics, type ChatRoute } from "@/lib/agent/intent";
-import { SseWriter } from "@/lib/agent/events";
+import { SseWriter, type ServerEvent } from "@/lib/agent/events";
 import { runLoop } from "@/lib/agent/loop";
 import { buildSystemPrompt } from "@/lib/prompts/system";
 import { toolMap } from "@/lib/tools";
 import { ModelRouter } from "@/lib/llm/router";
 import { makeClient } from "@/lib/llm/providers";
 import { loadRegistry, verifiedModels } from "@/lib/llm/registry";
+import { workspaceFor } from "@/lib/workspace";
 import { env } from "@/lib/env";
 import type { ChatMessage, RouteMode } from "@/lib/llm/types";
 
@@ -70,8 +71,10 @@ export async function POST(req: Request): Promise<Response> {
 
   const stream = new ReadableStream<Uint8Array>({
     start(controller) {
-      const sse = new SseWriter((chunk) =>
-        controller.enqueue(encoder.encode(chunk)),
+      const captured: ServerEvent[] = [];
+      const sse = new SseWriter(
+        (chunk) => controller.enqueue(encoder.encode(chunk)),
+        (ev) => captured.push(ev),
       );
       const abort = () => {
         sse.close();
@@ -89,6 +92,7 @@ export async function POST(req: Request): Promise<Response> {
       void (async () => {
         try {
           await handle(sessionId, message, mode, modelKey, sse, req.signal);
+          autoSave(sessionId, captured);
         } catch (e) {
           if (!req.signal.aborted) {
             sse.emit({
@@ -267,8 +271,61 @@ async function handle(
     type: "done",
     messageId: `${sessionId}:${Date.now()}`,
     sources: result.cited,
-    files: [],
+    files: result.filesChanged,
   });
+}
+
+/** Quiet audit writes after every turn (rule 40): trace, sources, telemetry. */
+function autoSave(sessionId: string, events: ServerEvent[]): void {
+  try {
+    const ws = workspaceFor(sessionId);
+    const trace = events
+      .map((e) => {
+        const { id: _id, ...rest } = e;
+        return JSON.stringify(rest);
+      })
+      .join("\n");
+    ws.write("trace.txt", trace + "\n");
+
+    const sources = events
+      .filter((e) => e.type === "source")
+      .map((e) => (e as unknown as { source: Record<string, unknown> }).source);
+    if (sources.length) {
+      const csv =
+        "n,url,title,domain,retrievedAt,via\n" +
+        sources
+          .map((s) =>
+            [s.n, s.url, s.title, s.domain, s.retrievedAt, s.via]
+              .map((v) => `"${String(v ?? "").replace(/"/g, '""')}"`)
+              .join(","),
+          )
+          .join("\n") +
+        "\n";
+      ws.write("sources.csv", csv);
+    }
+
+    const telemetry = events.filter((e) => e.type === "telemetry");
+    if (telemetry.length) {
+      const prev = exists(ws, "telemetry.jsonl")
+        ? ws.read("telemetry.jsonl").content
+        : "";
+      ws.write(
+        "telemetry.jsonl",
+        prev + telemetry.map((e) => JSON.stringify(e)).join("\n") + "\n",
+      );
+    }
+  } catch {
+    /* audit writes must never break the chat */
+  }
+}
+
+function exists(ws: ReturnType<typeof workspaceFor>, p: string): boolean {
+  try {
+    ws.read(p);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function listWorkspaceFilesSafe(sessionId: string): string[] {

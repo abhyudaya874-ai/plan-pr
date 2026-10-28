@@ -45,10 +45,18 @@ type DistributiveOmit<T, K extends keyof T> = T extends unknown
 export class SseWriter {
   private id = 0;
   private closed = false;
-  constructor(private readonly write: (chunk: string) => void) {}
+  constructor(
+    private readonly write: (chunk: string) => void,
+    private readonly tap?: (ev: ServerEvent) => void,
+  ) {}
   emit(ev: DistributiveOmit<ServerEvent, "id"> & { id?: number }): void {
     if (this.closed) return;
     const withId = { ...ev, id: this.id++ } as ServerEvent;
+    try {
+      this.tap?.(withId);
+    } catch {
+      /* tap must never break the stream */
+    }
     this.write(`data: ${JSON.stringify(withId)}\n\n`);
   }
   close(): void {

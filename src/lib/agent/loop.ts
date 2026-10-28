@@ -7,8 +7,11 @@ import type {
   Telemetry,
   ToolDef,
 } from "@/lib/llm/types";
+import { createTwoFilesPatch } from "diff";
 import type { SseWriter, SourceRef, StepKind } from "./events";
 import { SourceRegistry, scrubCitations } from "./sources";
+import { workspaceFor, type FileChange } from "@/lib/workspace";
+import { MUTATING_TOOLS } from "@/lib/tools/files";
 import type { Tool, ToolCtx } from "@/lib/tools/registry";
 
 export interface LoopDeps {
@@ -33,6 +36,7 @@ export interface LoopResult {
   cited: number[];
   /** [n] values stripped as invented citations. */
   citationDefects: number[];
+  filesChanged: string[];
 }
 
 const STEP_FOR_TOOL: Record<string, StepKind> = {
@@ -96,8 +100,11 @@ export async function runLoop(
     sources: [],
     cited: [],
     citationDefects: [],
+    filesChanged: [],
   };
   const sourceRegistry = new SourceRegistry();
+  let snapDone = false;
+  const fileChanges: FileChange[] = [];
 
   const toolDefs: ToolDef[] | undefined = params.useTools
     ? [...tools.values()].map((t) => t.def)
@@ -242,6 +249,18 @@ export async function runLoop(
           return;
         }
 
+        // Snapshot once per turn BEFORE the first mutating call (undo).
+        if (MUTATING_TOOLS.has(call.name)) {
+          if (!snapDone) {
+            try {
+              const seq = workspaceFor(sessionId).snapshot();
+              emitStep("write", `Workspace snapshot #${seq} (undo point)`, "done");
+            } catch {
+              /* snapshot failure must not block the write */
+            }
+            snapDone = true;
+          }
+        }
         const validated = tool.argsSchema.safeParse(parsedArgs);
         const ctx: ToolCtx = { sessionId, signal, sources: sourceRegistry };
         let exec;
@@ -275,6 +294,31 @@ export async function runLoop(
         for (const s of execSources) {
           sse.emit({ type: "source", source: s });
         }
+        // File changes: unified diff per file, capped for the wire.
+        const changes = (exec.data?.fileChanges ?? []) as FileChange[];
+        for (const c of changes) {
+          fileChanges.push(c);
+          const diff =
+            c.op === "delete"
+              ? `--- a/${c.path}\n+++ /dev/null\n`
+              : createTwoFilesPatch(
+                  `a/${c.path}`,
+                  `b/${c.path}`,
+                  (c.before ?? "").slice(0, 20_000),
+                  (c.after ?? "").slice(0, 20_000),
+                );
+          sse.emit({
+            type: "file_change",
+            path: c.path,
+            op: c.op,
+            before: c.before?.slice(0, 20_000),
+            after: c.after?.slice(0, 20_000),
+            diff,
+            bytes: c.bytes,
+            by: c.by,
+            t: Date.now(),
+          });
+        }
         if (exec.data?.injectionFlagged) {
           emitStep("think", "Possible prompt-injection in fetched content (flagged)", "done");
         }
@@ -292,6 +336,7 @@ export async function runLoop(
   result.cited = scrub.cited;
   result.citationDefects = scrub.defects;
   result.sources = sourceRegistry.all();
+  result.filesChanged = fileChanges.map((c) => c.path);
   if (scrub.defects.length) {
     emitStep(
       "think",

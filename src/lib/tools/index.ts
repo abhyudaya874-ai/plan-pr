@@ -1,5 +1,6 @@
 import { calcTool } from "./calc";
 import { makeWebTools } from "./web";
+import { makeFileTools } from "./files";
 import { TavilyClient } from "./tavily";
 import { unavailableTool, type Tool } from "./registry";
 
@@ -19,6 +20,7 @@ export function allTools(): Tool[] {
   return [
     calcTool,
     ...makeWebTools({ tavily }),
+    ...makeFileTools(),
     unavailableTool(
       "vault_lookup",
       "60",
@@ -33,46 +35,6 @@ export function allTools(): Tool[] {
         },
         ["amc", "scheme", "plan", "option", "field"],
       ),
-    ),
-    unavailableTool("list_files", "40", "List files in the workspace.", jsonObj({}, [])),
-    unavailableTool(
-      "read_file",
-      "40",
-      "Read a workspace file.",
-      jsonObj({ path: { type: "string" } }, ["path"]),
-    ),
-    unavailableTool(
-      "write_file",
-      "40",
-      "Write content to a workspace file.",
-      jsonObj({ path: { type: "string" }, content: { type: "string" } }, ["path", "content"]),
-    ),
-    unavailableTool(
-      "append_file",
-      "40",
-      "Append to a workspace file.",
-      jsonObj({ path: { type: "string" }, content: { type: "string" } }, ["path", "content"]),
-    ),
-    unavailableTool(
-      "delete_file",
-      "40",
-      "Delete a workspace file.",
-      jsonObj({ path: { type: "string" } }, ["path"]),
-    ),
-    unavailableTool(
-      "export_csv",
-      "40",
-      "Export rows to a CSV file in the workspace.",
-      jsonObj(
-        { path: { type: "string" }, rows: { type: "string" } },
-        ["path", "rows"],
-      ),
-    ),
-    unavailableTool(
-      "export_zip",
-      "40",
-      "Bundle selected workspace files into a zip.",
-      jsonObj({ paths: { type: "string" } }, ["paths"]),
     ),
   ];
 }
