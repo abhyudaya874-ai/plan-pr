@@ -1,7 +1,7 @@
 import { calcTool } from "./calc";
 import { makeWebTools } from "./web";
 import { makeFileTools } from "./files";
-import { vaultTool } from "./vault";
+import { vaultTool, vaultUniverseTool } from "./vault";
 import { TavilyClient } from "./tavily";
 import { ExaClient } from "./exa";
 import type { Tool } from "./registry";
@@ -16,6 +16,7 @@ export function allTools(): Tool[] {
     ...makeWebTools({ tavily, exa }),
     ...makeFileTools(),
     vaultTool(),
+    vaultUniverseTool(),
   ];
 }
 

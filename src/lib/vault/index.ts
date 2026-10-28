@@ -99,10 +99,13 @@ export function resolveIdentity(
   const scored = universe.funds.map((f) => {
     const fName = norm(f.amfiName);
     const fAmc = norm(f.amc);
+    // AMC match: input tokens may name the AMC entity ("PPFAS") OR the fund
+    // house embedded in the scheme name ("Parag Parikh" lives in amfiName).
+    const amcTokens = nAmc.split(" ").filter((t) => t.length > 1);
     const amcOk =
       !nAmc ||
+      amcTokens.every((t) => fAmc.includes(t) || fName.includes(t)) ||
       fAmc.includes(nAmc) ||
-      nAmc.includes(fAmc.split(" ")[0] ?? fAmc) ||
       fAmc.startsWith(nAmc);
     const planOk = !nPlan || /direct/.test(nPlan) === true; // universe is all Direct
     const optOk = !nOpt || /growth/.test(nOpt) === true;

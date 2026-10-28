@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { vaultLookup } from "@/lib/vault/load";
+import { vaultFunds, vaultLookup } from "@/lib/vault/load";
 import { fn, type Tool } from "./registry";
 
 const args = z.object({
@@ -9,6 +9,31 @@ const args = z.object({
   option: z.string().default("Growth"),
   field: z.string().min(1),
 });
+
+/** List the verified fund universe so the model knows what it can enrich. */
+export function vaultUniverseTool(): Tool {
+  return {
+    name: "vault_universe",
+    def: fn(
+      "vault_universe",
+      "List every fund in the verified vault universe (AMFI names, categories, scheme codes). Call BEFORE vault_lookup when unsure which funds are covered; never guess fund facts for funds outside this list.",
+      { type: "object", properties: {}, required: [] },
+    ),
+    argsSchema: z.object({}),
+    run: async () => {
+      const funds = vaultFunds();
+      const lines = funds.map(
+        (f) =>
+          `- ${f.identity.amfiName} [code ${f.schemeCode}] — ${f.category ?? "uncategorised"}`,
+      );
+      return {
+        ok: true,
+        resultText: `Verified universe (${funds.length} funds, AMFI source):\n${lines.join("\n")}`,
+        data: { count: funds.length },
+      };
+    },
+  };
+}
 
 export function vaultTool(): Tool {
   return {
