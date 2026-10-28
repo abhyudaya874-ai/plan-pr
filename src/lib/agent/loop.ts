@@ -112,6 +112,15 @@ export async function runLoop(
     : undefined;
 
   let stepCounter = 0;
+  const diffLineCounts = (diff: string) => {
+    let add = 0;
+    let del = 0;
+    for (const l of diff.split("\n")) {
+      if (l.startsWith("+") && !l.startsWith("+++")) add++;
+      else if (l.startsWith("-") && !l.startsWith("---")) del++;
+    }
+    return { add, del };
+  };
   const emitStep = (kind: StepKind, label: string, status: "running" | "done" | "error", detail?: string, t?: number) => {
     const tt = t ?? stepCounter++;
     sse.emit({ type: "step", kind, label, detail, status, t: tt });
@@ -154,12 +163,24 @@ export async function runLoop(
     let sawDone = false;
     let failed = false;
     // Reasoning models emit hundreds of reasoning deltas: collapse to ONE
-    // running step, closed on first content/tool call.
+    // step, closed on first content/tool call, carrying the real reasoning
+    // text as detail (Perplexity-style "thinking" block).
     let thinkT: number | null = null;
+    let reasoning = "";
     const closeThink = () => {
       if (thinkT == null) return;
-      sse.emit({ type: "step", kind: "think", label: "Thinking", status: "done", t: thinkT });
+      const detail =
+        reasoning.length > 3200 ? `${reasoning.slice(0, 3200).trimEnd()} …` : reasoning.trim();
+      sse.emit({
+        type: "step",
+        kind: "think",
+        label: "Thinking",
+        status: "done",
+        detail: detail || undefined,
+        t: thinkT,
+      });
       thinkT = null;
+      reasoning = "";
     };
 
     for await (const ev of router.chat(req, params.route, mode, { signal })) {
@@ -175,12 +196,14 @@ export async function runLoop(
             thinkT = stepCounter++;
             sse.emit({ type: "step", kind: "think", label: "Thinking", status: "running", t: thinkT });
           }
+          reasoning += ev.text;
           break;
         case "tool_call":
           closeThink();
           pendingCalls.push(ev.call);
           sse.emit({
             type: "tool_call",
+            callId: ev.call.id,
             name: ev.call.name,
             args: safeParse(ev.call.argsJson),
           });
@@ -315,6 +338,42 @@ export async function runLoop(
           emittedSources.add(s.canonicalUrl);
           sse.emit({ type: "source", source: s });
         }
+        // Devin-style tool stats: results/lines/diff counts per call.
+        const stats: string[] = [];
+        switch (call.name) {
+          case "calc":
+            stats.push(`= ${exec.resultText.slice(0, 48)}`);
+            break;
+          case "web_search": {
+            const srcs = (exec.data?.sources ?? []) as SourceRef[];
+            const p = (exec.data as { provider?: string } | undefined)?.provider;
+            stats.push(`→ ${srcs.length} result${srcs.length === 1 ? "" : "s"}${p ? ` · ${p}` : ""}`);
+            break;
+          }
+          case "fetch_url": {
+            const d = exec.data as { chars?: number; injectionFlagged?: boolean } | undefined;
+            stats.push(
+              `→ ${d?.chars ?? "?"} chars${d?.injectionFlagged ? " · ⚠ injection-flagged" : ""}`,
+            );
+            break;
+          }
+          case "read_file":
+            if (exec.ok) stats.push(`→ ${exec.resultText.split("\n").length} lines`);
+            break;
+          case "list_files":
+            stats.push(`→ ${((exec.data?.files ?? []) as unknown[]).length} files`);
+            break;
+          case "vault_lookup": {
+            try {
+              const v = JSON.parse(exec.resultText) as { status?: string; value?: unknown };
+              stats.push(`→ ${v.status}${v.status === "ok" ? ` · ${String(v.value)}` : ""}`);
+            } catch {
+              /* resultText not json */
+            }
+            break;
+          }
+        }
+
         // File changes: unified diff per file, capped for the wire.
         const changes = (exec.data?.fileChanges ?? []) as FileChange[];
         for (const c of changes) {
@@ -328,6 +387,10 @@ export async function runLoop(
                   (c.before ?? "").slice(0, 20_000),
                   (c.after ?? "").slice(0, 20_000),
                 );
+          const { add, del } = diffLineCounts(diff);
+          stats.push(
+            `${c.op} ${c.path}${add || del ? `  +${add} −${del}` : ""}  ${c.bytes}b`,
+          );
           sse.emit({
             type: "file_change",
             path: c.path,
@@ -343,7 +406,13 @@ export async function runLoop(
         if (exec.data?.injectionFlagged) {
           emitStep("think", "Possible prompt-injection in fetched content (flagged)", "done");
         }
-        sse.emit({ type: "tool_result", toolCallId: call.id, ok: exec.ok, summary: summarize(exec.resultText) });
+        sse.emit({
+          type: "tool_result",
+          toolCallId: call.id,
+          ok: exec.ok,
+          summary: summarize(exec.resultText),
+          stats: stats.length ? stats : undefined,
+        });
         emitStep(stepKind, stepLabel(call.name, parsedArgs), exec.ok ? "done" : "error", undefined, stepT);
       }),
     );

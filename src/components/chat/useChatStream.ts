@@ -53,8 +53,10 @@ interface Ev {
 export interface ToolCallItem {
   name: string;
   args: unknown;
+  callId?: string;
   ok?: boolean;
   summary?: string;
+  stats?: string[];
 }
 
 export interface Turn {
@@ -114,16 +116,24 @@ export function applyEvent(turn: Turn, ev: Ev): Turn {
     case "tool_call":
       return {
         ...turn,
-        toolCalls: [...turn.toolCalls, { name: String(ev.name), args: ev.args }],
+        toolCalls: [
+          ...turn.toolCalls,
+          { name: String(ev.name), args: ev.args, callId: String(ev.callId ?? "") },
+        ],
       };
     case "tool_result": {
       const toolCalls = [...turn.toolCalls];
-      const last = toolCalls[toolCalls.length - 1];
-      if (last) {
-        toolCalls[toolCalls.length - 1] = {
-          ...last,
+      // tools run in parallel — match by call id, fall back to last open call
+      let idx = toolCalls.findLastIndex(
+        (t) => t.callId !== undefined && t.callId === String(ev.toolCallId ?? ""),
+      );
+      if (idx < 0) idx = toolCalls.findLastIndex((t) => t.ok === undefined);
+      if (idx >= 0) {
+        toolCalls[idx] = {
+          ...toolCalls[idx]!,
           ok: Boolean(ev.ok),
           summary: String(ev.summary ?? ""),
+          stats: (ev.stats as string[] | undefined) ?? undefined,
         };
       }
       return { ...turn, toolCalls };

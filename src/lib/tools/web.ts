@@ -220,6 +220,7 @@ export function makeWebTools(deps: WebDeps): Tool[] {
         data: {
           sources: source ? [source] : [],
           injectionFlagged: screen.flagged,
+          chars: clean.length,
         },
       };
     },
