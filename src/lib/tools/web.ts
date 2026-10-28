@@ -2,6 +2,7 @@ import { z } from "zod";
 import { searchCacheGet, searchCacheSet } from "@/lib/db";
 import { guardUrl } from "./ssrf";
 import { TavilyClient, type SearchResultItem } from "./tavily";
+import { ExaClient } from "./exa";
 import { fn, type Tool, type ToolExecution } from "./registry";
 
 const PAGE_CAP = 6000;
@@ -75,6 +76,7 @@ const fetchArgs = z.object({
 
 export interface WebDeps {
   tavily: TavilyClient | null;
+  exa?: ExaClient | null;
   fetchFn?: typeof fetch;
   /** Injectable resolver for tests. */
   resolver?: (h: string) => Promise<{ address: string }[]>;
@@ -106,23 +108,38 @@ export function makeWebTools(deps: WebDeps): Tool[] {
     ),
     argsSchema: searchArgs,
     run: async (args, ctx) => {
-      if (!deps.tavily) {
-        return unavailable("web_search needs TAVILY_API_KEY (not configured)");
+      const providers: { name: string; search: (a: { query: string; maxResults?: number; timeRange?: "day" | "week" | "month" | "year" }) => Promise<SearchResultItem[]> }[] = [];
+      if (deps.tavily) providers.push({ name: "tavily", search: (a) => deps.tavily!.search({ query: a.query, maxResults: a.maxResults, timeRange: a.timeRange }, ctx.signal) });
+      if (deps.exa) providers.push({ name: "exa", search: (a) => deps.exa!.search(a, ctx.signal) });
+      if (!providers.length) {
+        return unavailable("web_search needs TAVILY_API_KEY or EXA_API_KEY (neither configured)");
       }
       const parsed = searchArgs.parse(args);
       const cacheKey = `${parsed.query.toLowerCase().trim()}|${new Date().toISOString().slice(0, 10)}`;
       let items = searchCacheGet(cacheKey) as SearchResultItem[] | null;
+      let usedProvider = "cache";
       if (!items) {
-        items = await deps.tavily.search(
-          {
-            query: parsed.query,
-            depth: parsed.depth,
-            maxResults: parsed.maxResults,
-            timeRange: parsed.timeRange,
-          },
-          ctx.signal,
-        );
-        searchCacheSet(cacheKey, items);
+        let lastErr = "no providers";
+        items = [];
+        for (const p of providers) {
+          try {
+            const got = await p.search({
+              query: parsed.query,
+              maxResults: parsed.maxResults,
+              timeRange: parsed.timeRange,
+            });
+            if (got.length) {
+              items = got;
+              usedProvider = p.name;
+              break;
+            }
+            lastErr = `${p.name}: 0 results`;
+          } catch (e) {
+            lastErr = `${p.name}: ${String(e).slice(0, 140)}`;
+          }
+        }
+        if (items.length) searchCacheSet(cacheKey, items);
+        else return unavailable(`all search providers failed (${lastErr})`);
       }
       const now = new Date().toISOString();
       const sources = items.slice(0, 8).map((it) => {
@@ -143,9 +160,9 @@ export function makeWebTools(deps: WebDeps): Tool[] {
       return {
         ok: true,
         resultText: lines.length
-          ? `Search results (cite as [n]):\n${lines}`
+          ? `Search results via ${usedProvider} (cite as [n]):\n${lines}`
           : "No results found.",
-        data: { sources },
+        data: { sources, provider: usedProvider },
       };
     },
   };

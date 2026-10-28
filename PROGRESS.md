@@ -24,10 +24,10 @@ secrets in repo/logs/client; I7 `pnpm repro` reproduces every reported number.
 | 70 planner+gates | done | deterministic computePlan (SIP/FV/buckets/risk-capacity+clamp); 9 gates incl identity/freshness/horizon/protection/concentration/risk/escalations/citation/disclosure; slot DRAFT_A + numeric+banned-phrase lint; domino verified live (facts->gates rerun); 74/74 tests; fixtures -> report/planner-fixtures.json; all 6 personas sensible (trader still escalation-red by design) | income_stream goals get SIP=0 fund % cosmetic; contradiction cards = notes not separate cards yet |
 | 80 pr review+approval | done | sha256(facts+plan+gates+draft) fingerprint; approval commit + receipt.json; red gates block approve (force needs reason); live verified: approve -> client view w/ fingerprint; fact change -> revoked + client view locked; case UI shows fingerprint+link | reject/reason flow not built (force+reason covers) |
 | 90 policy+redteam | done | redteam 9/10 then checkers fixed -> all 10 adversarial prompts handled correctly (refusals with safe alternatives); policy=adviser-tagged assumptions file | rule-compiler DSL not built (gates hardcoded) — acceptable under time |
-| 95 eval+submission | partial | `pnpm repro` regenerates report/{fund-qa.json(25/25),planner-fixtures.json,latency.txt,manifest.json}; README rewritten; 74 tests green; build green | deck/video not produced; secret-scan + dep audit quick pass pending |
+| 95 eval+submission | done | `pnpm repro` regenerates report/{fund-qa.json(25/25),planner-fixtures.json,latency.txt,manifest.json}; `pnpm deck` -> report/deck.pdf (10 slides, all numbers from report/); README rewritten; 74 tests, typecheck/lint/build green; secret-scan clean, pnpm audit 0 vulns | video optional, not produced; deck could use visual polish |
 
 ## Current state
-Layer A + phase 60 (partial: factsheet fields unavailable) done. Next: /70-planner-and-gates.
+ALL PHASES DONE (60 partial: factsheet fields unavailable). Demo loop works end-to-end: /case persona -> commits -> gates -> draft -> approve -> /client/<id>. Next best wins if time: factsheet text ingestion for TER/AUM, UI polish, video.
 
 ## Blockers
 - **TAVILY_API_KEY missing** → web_search returns "unavailable" (honest); fetch_url still works via guarded direct fetch. Drop the key into .env to enable live search.

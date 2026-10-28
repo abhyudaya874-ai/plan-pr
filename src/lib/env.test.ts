@@ -8,12 +8,14 @@ describe("loadEnv", () => {
       GROQ_API_KEY: "b",
       NVIDIA_API_KEY: "c",
       TAVILY_API_KEY: "d",
+      EXA_API_KEY: "e",
     });
     expect(e.providers).toEqual({
       openrouter: true,
       groq: true,
       nvidia: true,
       tavily: true,
+      exa: true,
     });
     expect(e.llmMissing).toBe(false);
   });
@@ -25,6 +27,7 @@ describe("loadEnv", () => {
       groq: true,
       nvidia: false,
       tavily: false,
+      exa: false,
     });
     expect(e.llmMissing).toBe(false);
   });

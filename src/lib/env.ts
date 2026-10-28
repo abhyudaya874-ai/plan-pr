@@ -17,6 +17,7 @@ const envSchema = z.object({
   GROQ_API_KEY: key,
   NVIDIA_API_KEY: key,
   TAVILY_API_KEY: key,
+  EXA_API_KEY: key,
 });
 
 export type LlmProviderId = "openrouter" | "groq" | "nvidia";
@@ -26,11 +27,12 @@ export interface ProviderFlags {
   groq: boolean;
   nvidia: boolean;
   tavily: boolean;
+  exa: boolean;
 }
 
 export interface Env {
   /** Raw key material. Never serialise this object into a response. */
-  keys: Record<LlmProviderId | "tavily", string | undefined>;
+  keys: Record<LlmProviderId | "tavily" | "exa", string | undefined>;
   /** Presence flags safe to expose (e.g. /api/health). */
   providers: ProviderFlags;
   /** True when no LLM provider is configured; chat is then unavailable. */
@@ -50,12 +52,14 @@ export function loadEnv(
     groq: e.GROQ_API_KEY,
     nvidia: e.NVIDIA_API_KEY,
     tavily: e.TAVILY_API_KEY,
+    exa: e.EXA_API_KEY,
   } as const;
   const providers: ProviderFlags = {
     openrouter: keys.openrouter !== undefined,
     groq: keys.groq !== undefined,
     nvidia: keys.nvidia !== undefined,
     tavily: keys.tavily !== undefined,
+    exa: keys.exa !== undefined,
   };
   return {
     keys,

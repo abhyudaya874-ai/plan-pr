@@ -91,7 +91,7 @@ ${slide("Suitability — 6 personas", `<table>
 <tr><th>persona</th><th>gates</th><th>fund pick</th></tr>${personaRows}</table>
 <p style="margin-top:14px">Low tolerance / thin buffers clamp the plan down the risk ladder; behavioural flags escalate to the adviser. Trader stays escalation-red — by design.</p>`)}
 
-${slide("Factual QA — ${qa.score} with blame", `<ul>
+${slide(`Factual QA — ${qa.score} with blame`, `<ul>
 <li>Every served number carries AMFI blame {doc,url,retrievedAt}</li>
 <li>Factsheet fields (TER/load/AUM/returns) → honest <b>unavailable</b>, never guessed</li>
 <li>Out-of-universe funds → <b>not_found</b>, never invented</li>

@@ -7,7 +7,7 @@
  * Deterministic steps need no network or keys beyond what build needs.
  */
 import { execSync } from "node:child_process";
-import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { readdirSync, statSync, writeFileSync } from "node:fs";
 
 const step = (name: string, cmd: string) => {
   console.log(`\n== ${name}`);
