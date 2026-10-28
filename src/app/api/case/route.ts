@@ -14,6 +14,7 @@ import {
 } from "@/lib/case";
 import { runPipeline } from "@/lib/case/pipeline";
 import { approve, approvalValid } from "@/lib/case/approval";
+import { makeZip } from "@/lib/case/zip";
 
 const postSchema = z.discriminatedUnion("op", [
   z.object({
@@ -43,6 +44,26 @@ export async function GET(req: Request): Promise<Response> {
   if (!caseId) {
     return Response.json({ cases: listCases() });
   }
+  // Evidence bundle export: real .zip of all case artifacts (I7 audit trail).
+  if (url.searchParams.get("op") === "export") {
+    if (!loadCase(caseId)) return Response.json({ error: "not_found" }, { status: 404 });
+    const dir = path.join(process.cwd(), "data", "cases", caseId);
+    const names = [
+      "case.json", "plan.json", "gates.json", "draft.md",
+      "receipt.json", "receipt.md", "evidence.csv", "commits.jsonl",
+    ];
+    const files = names
+      .filter((n) => existsSync(path.join(dir, n)))
+      .map((n) => ({ name: `${caseId.slice(0, 8)}/${n}`, data: readFileSync(path.join(dir, n)) }));
+    if (!files.length) return Response.json({ error: "no_artifacts" }, { status: 404 });
+    const zip = makeZip(files);
+    return new Response(new Uint8Array(zip), {
+      headers: {
+        "Content-Type": "application/zip",
+        "Content-Disposition": `attachment; filename="evidence-${caseId.slice(0, 8)}.zip"`,
+      },
+    });
+  }
   const c = loadCase(caseId);
   if (!c) return Response.json({ error: "not_found" }, { status: 404 });
   const commits = listCommits(caseId);
@@ -64,6 +85,7 @@ export async function GET(req: Request): Promise<Response> {
       hash: k.hash.slice(0, 12),
       changes: k.changes.map((ch) => ({
         key: ch.key,
+        before: (ch.before as { value?: unknown } | undefined)?.value,
         after: (ch.after as { value?: unknown } | undefined)?.value,
       })),
     })),

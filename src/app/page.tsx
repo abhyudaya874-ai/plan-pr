@@ -114,8 +114,9 @@ export default function Page() {
             Workspace
           </div>
           <RailItem label="Research chat" active />
-          <RailItem label="Plan PR review" badge="phase 80" />
-          <RailItem label="Policies" badge="phase 90" />
+          <RailItem label="Plan PR review" badge="case" href="/case" />
+          <RailItem label="Red-team arcade" badge="10 attacks" href="/redteam" />
+          <RailItem label="Policies" badge="gates+rules" href="/policy" />
           <div className="px-1 pb-1 pt-4 text-[10px] font-semibold uppercase tracking-widest text-zinc-600">
             Session
           </div>
@@ -285,10 +286,10 @@ export default function Page() {
   );
 }
 
-function RailItem({ label, active, badge }: { label: string; active?: boolean; badge?: string }) {
-  return (
+function RailItem({ label, active, badge, href }: { label: string; active?: boolean; badge?: string; href?: string }) {
+  const inner = (
     <div
-      className={`flex items-center justify-between rounded-lg px-2 py-1.5 ${active ? "bg-zinc-800/70 text-zinc-100" : "text-zinc-500"}`}
+      className={`flex items-center justify-between rounded-lg px-2 py-1.5 ${active ? "bg-zinc-800/70 text-zinc-100" : "text-zinc-500"} ${href ? "transition hover:bg-zinc-800/50 hover:text-zinc-300" : ""}`}
     >
       <span>{label}</span>
       {badge && (
@@ -298,6 +299,7 @@ function RailItem({ label, active, badge }: { label: string; active?: boolean; b
       )}
     </div>
   );
+  return href ? <a href={href}>{inner}</a> : inner;
 }
 
 /** Bridge text -> a follow-up instruction the user can edit/send. */

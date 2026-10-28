@@ -1,0 +1,20 @@
+{
+  "schema": "custom_rules_v1",
+  "rules": [
+    {
+      "schema": "custom_rule_v1",
+      "id": "retiree_equity_cap",
+      "name": "Retiree equity cap",
+      "when": {
+        "field": "age",
+        "op": ">=",
+        "value": 60
+      },
+      "then": {
+        "status": "amber",
+        "message": "Age 60+ plans: review equity share manually"
+      },
+      "enabled": true
+    }
+  ]
+}

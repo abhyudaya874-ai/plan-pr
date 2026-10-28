@@ -27,7 +27,7 @@ interface CommitInfo {
   kind: string;
   at: string;
   hash: string;
-  changes: { key: string; after: unknown }[];
+  changes: { key: string; before: unknown; after: unknown }[];
 }
 interface BlameInfo {
   found: boolean;
@@ -77,6 +77,7 @@ export default function CasePage() {
   const [draft, setDraft] = useState("");
   const [approval, setApproval] = useState<{ valid: boolean; receipt: { contentHash: string; approvedBy: string; at: string } | null } | null>(null);
   const [approver, setApprover] = useState("adviser-1");
+  const [openBlame, setOpenBlame] = useState<string | null>(null);
   const side = useResizable({
     axis: "x",
     initial: 256,
@@ -204,6 +205,29 @@ export default function CasePage() {
           </div>
         ) : (
           <div className="mx-auto max-w-3xl">
+            {/* adviser time-duel: elapsed from first commit to approval + counters */}
+            {commits.length > 0 && (
+              <div className="mb-3 flex flex-wrap items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-900/30 px-3 py-1.5 text-[11px] text-zinc-500">
+                <span>⏱ persona → approved:</span>
+                <span className="font-mono text-zinc-300">
+                  {(() => {
+                    const first = commits[0]!;
+                    const lastApproval = [...commits].reverse().find((c) => c.kind === "approval");
+                    const end = lastApproval ?? commits.at(-1)!;
+                    const ms = new Date(end.at).getTime() - new Date(first.at).getTime();
+                    return lastApproval ? `${(ms / 1000).toFixed(0)}s` : `in progress (${(ms / 1000).toFixed(0)}s so far)`;
+                  })()}
+                </span>
+                <span>·</span>
+                <span>{commits.filter((c) => c.kind === "facts" || c.kind === "create").length} fact commits</span>
+                <span>·</span>
+                <span>{commits.reduce((n, c) => n + c.changes.length, 0)} facts changed</span>
+                <span>·</span>
+                <span className={gates.some((g) => g.status === "red") ? "text-red-400" : "text-emerald-500"}>
+                  {gates.filter((g) => g.status === "red").length} red gates
+                </span>
+              </div>
+            )}
             <div className="mb-4 flex items-center justify-between">
               <div>
                 <h1 className="text-[20px] font-semibold text-zinc-100">{active.name}</h1>
@@ -226,6 +250,13 @@ export default function CasePage() {
                       approval revoked by fact change
                     </span>
                   )}
+                  <a
+                    href={`/api/case?op=export&caseId=${active.caseId}`}
+                    className="rounded bg-zinc-800 px-2 py-0.5 text-[10px] text-zinc-400 hover:text-zinc-200"
+                    title="evidence bundle (zip): receipt, evidence.csv, plan, gates, draft, commits"
+                  >
+                    ⇓ evidence.zip
+                  </a>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -268,8 +299,29 @@ export default function CasePage() {
                   <span className="w-64 shrink-0 truncate text-zinc-500">{k}</span>
                   <span className="flex-1 text-zinc-200">{String(v.value)}</span>
                   {blameInfo[k]?.found && (
-                    <span className="shrink-0 text-[10px] text-zinc-600" title={blameInfo[k]!.commitHash}>
-                      c{blameInfo[k]!.commitSeq} · {String(v.source ?? "")}
+                    <span className="relative shrink-0">
+                      <button
+                        onClick={() => setOpenBlame(openBlame === k ? null : k)}
+                        className="rounded bg-zinc-800 px-1.5 py-0.5 text-[10px] text-zinc-500 hover:text-[#c9854a]"
+                        title="blame"
+                      >
+                        c{blameInfo[k]!.commitSeq} · {String(v.source ?? "")}
+                      </button>
+                      {openBlame === k && (
+                        <span className="absolute right-0 top-full z-30 mt-1 block w-72 rounded-lg border border-zinc-700 bg-zinc-900 p-2.5 text-left shadow-xl">
+                          <span className="mb-1 block text-[11px] font-medium text-[#c9854a]">blame — {k}</span>
+                          <span className="block text-[10.5px] leading-4 text-zinc-400">
+                            value <b className="text-zinc-200">{String(v.value)}</b>
+                            {(v as { asOf?: string }).asOf ? ` · as of ${(v as { asOf?: string }).asOf}` : ""}
+                          </span>
+                          <span className="mt-1 block text-[10px] text-zinc-500">
+                            source: {String(v.source ?? "adviser-entered")} · commit #{blameInfo[k]!.commitSeq}
+                          </span>
+                          <span className="mt-0.5 block break-all font-mono text-[9.5px] text-zinc-600">
+                            {blameInfo[k]!.commitHash}
+                          </span>
+                        </span>
+                      )}
                     </span>
                   )}
                 </div>
@@ -316,8 +368,19 @@ export default function CasePage() {
                       <span className="ml-auto text-[10px] text-zinc-600">{new Date(c.at).toLocaleTimeString()}</span>
                     </div>
                     {c.changes.length > 0 && (
-                      <div className="mt-1 truncate text-[11px] text-zinc-600">
-                        {c.changes.map((ch) => `${ch.key}→${JSON.stringify(ch.after)}`).join(", ")}
+                      <div className="mt-1 space-y-0.5 text-[11px]">
+                        {c.changes.map((ch, i) => (
+                          <div key={i} className="flex items-center gap-1.5">
+                            <code className="text-zinc-600">{ch.key}</code>
+                            {ch.before !== undefined && (
+                              <span className="text-red-400/70 line-through">{JSON.stringify(ch.before)}</span>
+                            )}
+                            <span className="text-zinc-600">→</span>
+                            <span className={ch.after === undefined ? "text-red-400/70 line-through" : "text-emerald-400/80"}>
+                              {ch.after === undefined ? "(removed)" : JSON.stringify(ch.after)}
+                            </span>
+                          </div>
+                        ))}
                       </div>
                     )}
                   </div>

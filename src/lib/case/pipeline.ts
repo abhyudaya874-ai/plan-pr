@@ -2,6 +2,7 @@ import { writeFileSync } from "node:fs";
 import path from "node:path";
 import { computePlan, type GoalInput, type PlanOutput, type PlannerFacts } from "@/lib/planner";
 import { runAllGates, type GateResult } from "@/lib/gates";
+import { runCustomRules } from "@/lib/gates/custom";
 import { DRAFT_A, fillSlots, lintNumbers, type LintResult, type SlotValue } from "@/lib/gates/draft";
 import { plannerPolicy } from "@/lib/policy";
 import { vaultFunds } from "@/lib/vault/load";
@@ -64,12 +65,12 @@ export function runPipeline(caseId: string): PipelineResult | null {
     category: f.category,
   }));
   const plan = computePlan(facts, policy, universe);
-  const gates = runAllGates({
-    facts,
-    plan,
-    vault: vaultFunds(),
-    behavioralFlags: behavioralFlags(c),
-  });
+  const flags = behavioralFlags(c);
+  const gates = [
+    ...runAllGates({ facts, plan, vault: vaultFunds(), behavioralFlags: flags }),
+    // adviser-authored rules (enabled only after dry-run confirmation)
+    ...runCustomRules({ facts, behavioralFlags: flags }),
+  ];
 
   const slots: SlotValue[] = [
     { path: "client.name", text: c.name },

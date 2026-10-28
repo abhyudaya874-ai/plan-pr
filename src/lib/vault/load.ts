@@ -1,6 +1,7 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { navStale, resolveIdentity, vaultFundSchema, type FieldValue, type VaultFund } from "./index";
+import { isQuarantined } from "./quarantine";
 
 const VAULT_DIR = path.join(process.cwd(), "data", "vault", "funds");
 const UNIVERSE_PATH = path.join(process.cwd(), "data", "vault", "universe.json");
@@ -61,6 +62,18 @@ export function vaultLookup(input: {
   const fund = funds.find((f) => f.schemeCode === res.code);
   if (!fund) return { found: false };
   const field = input.field.toLowerCase().replace(/\s+/g, "_");
+  // quarantined/missing source page -> unavailable, never a substitute (I2)
+  const q = isQuarantined(fund.schemeCode, field);
+  if (q.flagged) {
+    return {
+      found: true,
+      schemeCode: fund.schemeCode,
+      amfiName: fund.identity.amfiName,
+      field,
+      value: { status: "unavailable", reason: `quarantined: ${q.reason}` },
+      identity: fund.identity,
+    };
+  }
   const value = fund.fields[field];
   if (!value) {
     return {

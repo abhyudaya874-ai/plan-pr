@@ -3,6 +3,7 @@ import { connection } from "next/server";
 import path from "node:path";
 import { approvalValid, loadReceipt } from "@/lib/case/approval";
 import { loadCase } from "@/lib/case";
+import { ClientView } from "@/components/client/ClientView";
 
 /**
  * Client view — read-only. Shows the approved draft ONLY when the approval
@@ -47,18 +48,7 @@ export default async function ClientPage({
           </div>
         ) : (
           <>
-            <div className="mb-4 rounded-lg border border-emerald-300 bg-emerald-50 px-4 py-2 text-[12px] text-emerald-800">
-              Approved by {receipt!.approvedBy} · {new Date(receipt!.at).toLocaleString()} ·
-              fingerprint <code className="font-mono">{receipt!.contentHash.slice(0, 16)}</code>
-            </div>
-            <article className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
-              <pre className="whitespace-pre-wrap font-sans text-[14px] leading-7 text-zinc-800">{draft}</pre>
-            </article>
-            <p className="mt-4 text-[11px] leading-5 text-zinc-500">{receipt!.disclosure}</p>
-            <p className="mt-2 text-[11px] text-zinc-400">
-              Every figure in this document traces to a verified field or deterministic
-              calculation. Approval is adviser plan sign-off — not trade consent.
-            </p>
+            <ClientView draft={draft!} receipt={receipt!} />
           </>
         )}
       </div>

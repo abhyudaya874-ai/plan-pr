@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { appendCommit, loadCase, type PlanCase } from "./index";
+import { writeReceiptArtifacts } from "./receipt";
 
 /**
  * Approval = advisory sign-off bound to a content fingerprint (I4).
@@ -65,6 +66,7 @@ export function approve(caseId: string, approver: string): ApprovalReceipt | nul
       "Direct plans only. AI-assisted draft reviewed by a SEBI-registered Investment Adviser. Illustrative projections, not a return guarantee. Approval ≠ client trade consent; no execution in this app.",
   };
   writeFileSync(path.join(caseDir(caseId), "receipt.json"), JSON.stringify(receipt, null, 2) + "\n");
+  writeReceiptArtifacts(caseId, c, receipt); // receipt.md + evidence.csv
   return receipt;
 }
 

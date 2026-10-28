@@ -36,3 +36,11 @@ on 3001 (`pnpm dev` picks a free port).
 
 ## Blockers
 - TAVILY_API_KEY not provided (needed at phase 30; degrades gracefully until then).
+
+## Phases 80+90 — full checklist pass (committed)
+
+**Phase 80 (PR review)**: facts-diff per commit (before→after lines), blame popovers, approval receipt artifacts (receipt.md + evidence.csv + receipt.json), real .zip export (`/api/case?op=export`), adviser time-duel (persona→approved elapsed + counters), client view lang toggle (EN/हिंदी) + 3 teach-back questions.
+
+**Phase 90 (policy+redteam)**: `/policy` page — gates list, banned phrases, assumptions, custom rules, missing-page quarantine toggle (schemeCode.field → `unavailable` flip, verified live); rule compiler DSL (zod) + `/api/rules/compile` dry-run on 6 personas (<5ms) + enable → runs in pipeline (verified: `custom_retiree_equity_cap` amber on chennai); `/redteam` arcade — 10 cards × 3 paraphrases via shared `src/lib/eval/redteam.ts`, `/api/redteam` runs prompts through the REAL `runTurn` pipeline (no shadow impl); vault quarantine flag (`data/vault/quarantine.json`).
+
+Verified live: quarantine set → vault_lookup `unavailable` → clear; rule dry-run fires only on chennai-retiree-68; approve writes receipt.md/evidence.csv; evidence.zip opens with 7 artifacts; guarantee_20 card → pass (refusal + alternative).
