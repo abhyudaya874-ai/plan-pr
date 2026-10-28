@@ -10,7 +10,7 @@ interface Persona {
   age: number;
   city: string;
   incomeMonthly: number;
-  goals: { id: string; label: string; amount: number | null; horizonMonths: number; priority: string }[];
+  goals: { id: string; label: string; amount: number | null; horizonMonths: number; priority: string; type?: string }[];
   statedRiskTolerance: string;
   [k: string]: unknown;
 }
@@ -47,11 +47,20 @@ function seedFacts(p: Persona): Record<string, { value: unknown; source: string 
     "facts.emergency_buffer_months": { value: p.emergencyBufferMonths, source: "persona" },
     "facts.stated_risk_tolerance": { value: p.statedRiskTolerance, source: "persona" },
   };
+  if (p.behavioralFlags) {
+    f["facts.behavioral_flags"] = { value: (p.behavioralFlags as string[]).join(","), source: "persona" };
+  }
+  if (p.corpus) {
+    f["facts.corpus"] = { value: p.corpus, source: "persona" };
+  }
   p.goals.forEach((g, i) => {
     f[`facts.goal_${i}.label`] = { value: g.label, source: "persona" };
     if (g.amount != null) f[`facts.goal_${i}.amount`] = { value: g.amount, source: "persona" };
     f[`facts.goal_${i}.horizon_months`] = { value: g.horizonMonths, source: "persona" };
     f[`facts.goal_${i}.priority`] = { value: g.priority, source: "persona" };
+    if (g.type) {
+      f[`facts.goal_${i}.type`] = { value: g.type, source: "persona" };
+    }
   });
   return f;
 }
@@ -63,6 +72,8 @@ export default function CasePage() {
   const [commits, setCommits] = useState<CommitInfo[]>([]);
   const [chain, setChain] = useState<{ ok: boolean } | null>(null);
   const [blameInfo, setBlameInfo] = useState<Record<string, BlameInfo>>({});
+  const [gates, setGates] = useState<{ id: string; name: string; status: string; why: string[] }[]>([]);
+  const [draft, setDraft] = useState("");
 
   const refresh = useCallback(() => {
     void fetch("/api/case").then((r) => r.json()).then((d: { cases: CaseInfo[] }) => setCases(d.cases));
@@ -75,10 +86,18 @@ export default function CasePage() {
 
   const openCase = (caseId: string) => {
     void fetch(`/api/case?caseId=${caseId}`).then((r) => r.json()).then(
-      (d: { case: CaseInfo; commits: CommitInfo[]; chain: { ok: boolean } }) => {
+      (d: {
+        case: CaseInfo;
+        commits: CommitInfo[];
+        chain: { ok: boolean };
+        gates: { id: string; name: string; status: string; why: string[] }[] | null;
+        draft: string | null;
+      }) => {
         setActive(d.case);
         setCommits(d.commits);
         setChain(d.chain);
+        setGates(d.gates ?? []);
+        setDraft(d.draft ?? "");
         // blame per fact key
         const keys = Object.keys(d.case.facts);
         void Promise.all(
@@ -183,6 +202,33 @@ export default function CasePage() {
                 </div>
               ))}
             </div>
+
+            {gates.length > 0 && (
+              <>
+                <h2 className="mb-2 mt-6 text-[11px] font-semibold uppercase tracking-widest text-zinc-500">
+                  Gates {gates.filter((g) => g.status === "red").length} red · {gates.filter((g) => g.status === "amber").length} amber
+                </h2>
+                <div className="mb-4 grid gap-1.5 sm:grid-cols-2">
+                  {gates.map((g) => (
+                    <div key={g.id} className="rounded-lg border border-zinc-800 px-3 py-2">
+                      <div className="flex items-center gap-2 text-[12px]">
+                        <span className={`h-2 w-2 rounded-full ${g.status === "red" ? "bg-red-500" : g.status === "amber" ? "bg-amber-400" : "bg-emerald-500"}`} />
+                        <span className="font-medium text-zinc-200">{g.name}</span>
+                        <span className={`ml-auto text-[10px] uppercase ${g.status === "red" ? "text-red-400" : g.status === "amber" ? "text-amber-400" : "text-emerald-500"}`}>{g.status}</span>
+                      </div>
+                      <div className="mt-1 text-[11px] leading-4 text-zinc-500">{g.why.join(" · ")}</div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {draft && (
+              <>
+                <h2 className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-zinc-500">Draft (slot-filled, lint-checked)</h2>
+                <pre className="whitespace-pre-wrap rounded-xl border border-zinc-800 bg-zinc-900/40 p-4 text-[12px] leading-5 text-zinc-300">{draft}</pre>
+              </>
+            )}
 
             <h2 className="mb-2 mt-6 text-[11px] font-semibold uppercase tracking-widest text-zinc-500">Commits</h2>
             <div className="space-y-1">

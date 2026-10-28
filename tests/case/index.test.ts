@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import fs from "node:fs";
+import path from "node:path";
 import {
   appendCommit,
   blame,
@@ -38,11 +40,8 @@ describe("case repo hash chain", () => {
     const commits = listCommits(c.caseId);
     // corrupt a stored commit file
     const bad = { ...commits[1]!, changes: [] };
-    // write directly to simulate tamper
-    const fs = require("node:fs") as typeof import("node:fs");
-    const p = require("node:path") as typeof import("node:path");
     fs.writeFileSync(
-      p.join(process.cwd(), "data/cases", c.caseId, "commits", "0001.json"),
+      path.join(process.cwd(), "data/cases", c.caseId, "commits", "0001.json"),
       JSON.stringify(bad, null, 2),
     );
     const v = verifyChain(c.caseId);

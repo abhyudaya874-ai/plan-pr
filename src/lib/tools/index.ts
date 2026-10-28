@@ -3,17 +3,7 @@ import { makeWebTools } from "./web";
 import { makeFileTools } from "./files";
 import { vaultTool } from "./vault";
 import { TavilyClient } from "./tavily";
-import { unavailableTool, type Tool } from "./registry";
-
-/**
- * Agent tools (rule 40). Tools whose phase has not landed are REAL tools that
- * return {status:"unavailable"} - never fake results.
- */
-const jsonObj = (props: Record<string, unknown>, req: string[]) => ({
-  type: "object",
-  properties: props,
-  required: req,
-});
+import type { Tool } from "./registry";
 
 export function allTools(): Tool[] {
   const tavilyKey = process.env.TAVILY_API_KEY?.trim();

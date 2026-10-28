@@ -20,7 +20,7 @@ secrets in repo/logs/client; I7 `pnpm repro` reproduces every reported number.
 | 30 research+citations | partial | `pnpm test` 39/39; `pnpm build` ok; fetch_url live w/o tavily (example.com fetched, source registered); SSRF blocked http://169.254.169.254; injection pre-screen tested | web_search live calls UNVERIFIED - no TAVILY_API_KEY (honest "unavailable"); sources.csv/trace.txt land in /40 |
 | 40 workbench files | done | `pnpm test` 47/47 (path guard, symlink, unicode, snapshot/undo); live: export_csv -> file_change event + real file + snapshot + trace.txt/telemetry.jsonl auto-saved; `/api/workspace` list/read/undo | unit + live verified |
 | 50 ui shell | done | `pnpm build` ok; rail + chat/research toggle + model picker + workbench w/ diff + mobile sheet; cited-only source chips, steps timeline, bridge card; history survives refresh | Layer A complete; user visual check via browser preview |
-| 60 case repo+vault | pending | | ASK: fund universe |
+| 60 case repo+vault | partial | universe: 12 direct-plan funds from live AMFI master (user: option A); vault: 9 real fields/fund w/ AMFI blame + 15 honest `unavailable`; `pnpm test` 59/59 (hash chain, tamper, revoke, undo, blame, identity lock); live vault_lookup nav=₹89.2762 w/ blame; /case + /api/{case,blame,personas,vault} | factsheet fields UNAVAILABLE — AMC sites bot-guarded; drop text into data/sources/factsheets/ to fill |
 | 70 planner+gates | pending | | |
 | 80 pr review+approval | pending | | |
 | 90 policy+redteam | pending | | |

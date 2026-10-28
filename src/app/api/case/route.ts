@@ -1,3 +1,5 @@
+import { readFileSync, existsSync } from "node:fs";
+import path from "node:path";
 import { z } from "zod";
 import {
   appendCommit,
@@ -10,6 +12,7 @@ import {
   undoHead,
   verifyChain,
 } from "@/lib/case";
+import { runPipeline } from "@/lib/case/pipeline";
 
 const postSchema = z.discriminatedUnion("op", [
   z.object({
@@ -37,6 +40,14 @@ export async function GET(req: Request): Promise<Response> {
   if (!c) return Response.json({ error: "not_found" }, { status: 404 });
   const commits = listCommits(caseId);
   const verify = verifyChain(caseId);
+  const dir = path.join(process.cwd(), "data", "cases", caseId);
+  const readJson = (n: string) =>
+    existsSync(path.join(dir, n))
+      ? (JSON.parse(readFileSync(path.join(dir, n), "utf8")) as unknown)
+      : null;
+  const draft = existsSync(path.join(dir, "draft.md"))
+    ? readFileSync(path.join(dir, "draft.md"), "utf8")
+    : null;
   return Response.json({
     case: c,
     commits: commits.map((k) => ({
@@ -51,6 +62,9 @@ export async function GET(req: Request): Promise<Response> {
     })),
     chain: verify,
     head: commits.at(-1)?.hash.slice(0, 12) ?? null,
+    plan: readJson("plan.json"),
+    gates: readJson("gates.json"),
+    draft,
   });
 }
 
@@ -63,13 +77,19 @@ export async function POST(req: Request): Promise<Response> {
   switch (b.op) {
     case "create": {
       const c = createCase(b.name, b.personaId, b.facts ?? {});
-      return Response.json({ case: c });
+      const pipe = runPipeline(c.caseId); // domino: facts -> gates
+      return Response.json({ case: c, gates: pipe?.gates.map((g) => ({ id: g.id, status: g.status })) });
     }
     case "facts": {
       if (!loadCase(b.caseId)) return Response.json({ error: "not_found" }, { status: 404 });
       const commit = appendCommit(b.caseId, "facts", b.facts);
+      const pipe = runPipeline(b.caseId); // domino re-run on every fact change
       const c = loadCase(b.caseId)!;
-      return Response.json({ commit: { seq: commit.seq, hash: commit.hash.slice(0, 12) }, case: c });
+      return Response.json({
+        commit: { seq: commit.seq, hash: commit.hash.slice(0, 12) },
+        case: c,
+        gates: pipe?.gates.map((g) => ({ id: g.id, status: g.status })),
+      });
     }
     case "undo": {
       const commit = undoHead(b.caseId);

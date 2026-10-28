@@ -30,8 +30,10 @@ export default function Page() {
       sid = `s-${Math.random().toString(36).slice(2, 10)}`;
       localStorage.setItem(LS_SESSION, sid);
     }
-    setSessionId(sid);
-    setModelKey(localStorage.getItem(LS_MODEL) ?? "");
+    void Promise.resolve().then(() => {
+      setSessionId(sid);
+      setModelKey(localStorage.getItem(LS_MODEL) ?? "");
+    });
     void fetch(`/api/chat?sessionId=${sid}`)
       .then((r) => r.json())
       .then((d: { messages: { role: string; content: string; bridge: string | null }[] }) =>

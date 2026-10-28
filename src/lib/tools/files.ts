@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { zipSync, strToU8 } from "fflate";
 import { existsSync, writeFileSync } from "node:fs";
-import path from "node:path";
 import { workspaceFor, WorkspaceError, type FileChange } from "@/lib/workspace";
 import { fn, type Tool, type ToolExecution } from "./registry";
 

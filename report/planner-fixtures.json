@@ -1,0 +1,754 @@
+{
+  "generatedAt": "2026-10-28T06:28:55.128Z",
+  "personas": [
+    {
+      "persona": "bengaluru-grad-23",
+      "label": "Bengaluru graduate, 23",
+      "numbers": {
+        "monthlyEssentials": 45500,
+        "emergencyTarget": 273000,
+        "emergencyGap": 204750,
+        "investableMonthly": 19500,
+        "goals": [
+          {
+            "id": "g-emerg",
+            "label": "emergency fund",
+            "amountNeeded": 200000,
+            "inflatedAmount": 212000,
+            "horizonMonths": 12,
+            "monthlySip": 17101,
+            "bucket": "protected",
+            "assetClass": "liquid",
+            "assumedReturn": 0.06,
+            "rateSource": "policy:assumptions/conservativeReturn"
+          },
+          {
+            "id": "g-wealth",
+            "label": "long-term wealth + tax saving",
+            "amountNeeded": null,
+            "inflatedAmount": null,
+            "horizonMonths": 120,
+            "monthlySip": null,
+            "bucket": "growth",
+            "assetClass": "cons_hybrid",
+            "assumedReturn": 0.09,
+            "rateSource": "policy:assumptions/balancedReturn"
+          }
+        ],
+        "sustainableIncome": null
+      },
+      "suggestedFunds": [
+        {
+          "schemeCode": "119800",
+          "purpose": "emergency fund",
+          "pct": 100
+        },
+        {
+          "schemeCode": "119118",
+          "purpose": "long-term wealth + tax saving",
+          "pct": 0
+        }
+      ],
+      "contradictions": [
+        {
+          "id": "thin_buffer",
+          "severity": "amber",
+          "text": "emergency buffer 1.5m < 3m — build liquidity before long-horizon equity"
+        }
+      ],
+      "gates": [
+        {
+          "id": "identity",
+          "status": "green",
+          "why": [
+            "all suggested funds resolve to vault entries"
+          ]
+        },
+        {
+          "id": "freshness",
+          "status": "amber",
+          "why": [
+            "2 fund(s) lack verified TER — costs can't be compared until factsheets land"
+          ]
+        },
+        {
+          "id": "horizon_liquidity",
+          "status": "green",
+          "why": [
+            "no short-horizon goal in volatile assets"
+          ]
+        },
+        {
+          "id": "goal_protection",
+          "status": "green",
+          "why": [
+            "protected goals are in liquid/short-debt buckets"
+          ]
+        },
+        {
+          "id": "concentration",
+          "status": "amber",
+          "why": [
+            "119800 at 100% of allocation"
+          ]
+        },
+        {
+          "id": "risk_capacity_tolerance",
+          "status": "green",
+          "why": [
+            "capacity=2 (stable income (0); buffer <3m (-1))",
+            "tolerance=4 (stated high)"
+          ]
+        },
+        {
+          "id": "escalations",
+          "status": "amber",
+          "why": [
+            "emergency buffer 1.5m < 3m — build liquidity before long-horizon equity"
+          ]
+        },
+        {
+          "id": "citation_coverage",
+          "status": "green",
+          "why": [
+            "every computed number traces to a tagged input"
+          ]
+        },
+        {
+          "id": "disclosure",
+          "status": "amber",
+          "why": [
+            "no draft yet — disclosure check pending"
+          ]
+        }
+      ],
+      "gateSummary": {
+        "red": 0,
+        "amber": 4,
+        "green": 5
+      }
+    },
+    {
+      "persona": "pune-couple-31",
+      "label": "Pune couple, 31 — child education",
+      "numbers": {
+        "monthlyEssentials": 122500,
+        "emergencyTarget": 735000,
+        "emergencyGap": 245000,
+        "investableMonthly": 52500,
+        "goals": [
+          {
+            "id": "g-edu",
+            "label": "child higher education",
+            "amountNeeded": 4000000,
+            "inflatedAmount": 8531713,
+            "horizonMonths": 156,
+            "monthlySip": 28765,
+            "bucket": "growth",
+            "assetClass": "dynamic",
+            "assumedReturn": 0.09,
+            "rateSource": "policy:assumptions/balancedReturn"
+          },
+          {
+            "id": "g-emerg",
+            "label": "top-up emergency fund",
+            "amountNeeded": 300000,
+            "inflatedAmount": 327401,
+            "horizonMonths": 18,
+            "monthlySip": 17341,
+            "bucket": "protected",
+            "assetClass": "corp_bond",
+            "assumedReturn": 0.06,
+            "rateSource": "policy:assumptions/conservativeReturn"
+          }
+        ],
+        "sustainableIncome": null
+      },
+      "suggestedFunds": [
+        {
+          "schemeCode": "119609",
+          "purpose": "child higher education",
+          "pct": 62
+        },
+        {
+          "schemeCode": "120692",
+          "purpose": "top-up emergency fund",
+          "pct": 38
+        }
+      ],
+      "contradictions": [],
+      "gates": [
+        {
+          "id": "identity",
+          "status": "green",
+          "why": [
+            "all suggested funds resolve to vault entries"
+          ]
+        },
+        {
+          "id": "freshness",
+          "status": "amber",
+          "why": [
+            "2 fund(s) lack verified TER — costs can't be compared until factsheets land"
+          ]
+        },
+        {
+          "id": "horizon_liquidity",
+          "status": "green",
+          "why": [
+            "no short-horizon goal in volatile assets"
+          ]
+        },
+        {
+          "id": "goal_protection",
+          "status": "green",
+          "why": [
+            "protected goals are in liquid/short-debt buckets"
+          ]
+        },
+        {
+          "id": "concentration",
+          "status": "amber",
+          "why": [
+            "119609 at 62% of allocation"
+          ]
+        },
+        {
+          "id": "risk_capacity_tolerance",
+          "status": "green",
+          "why": [
+            "capacity=4 (stable income (0); long horizon 13y (+1))",
+            "tolerance=3 (stated moderate)"
+          ]
+        },
+        {
+          "id": "escalations",
+          "status": "green",
+          "why": [
+            "no behavioural flags"
+          ]
+        },
+        {
+          "id": "citation_coverage",
+          "status": "green",
+          "why": [
+            "every computed number traces to a tagged input"
+          ]
+        },
+        {
+          "id": "disclosure",
+          "status": "amber",
+          "why": [
+            "no draft yet — disclosure check pending"
+          ]
+        }
+      ],
+      "gateSummary": {
+        "red": 0,
+        "amber": 3,
+        "green": 6
+      }
+    },
+    {
+      "persona": "surat-owner-44",
+      "label": "Surat business owner, 44 — irregular income, retire at 58",
+      "numbers": {
+        "monthlyEssentials": 105000,
+        "emergencyTarget": 630000,
+        "emergencyGap": 315000,
+        "investableMonthly": 45000,
+        "goals": [
+          {
+            "id": "g-retire",
+            "label": "retirement corpus at 58",
+            "amountNeeded": 30000000,
+            "inflatedAmount": 67827119,
+            "horizonMonths": 168,
+            "monthlySip": 201251,
+            "bucket": "growth",
+            "assetClass": "cons_hybrid",
+            "assumedReturn": 0.09,
+            "rateSource": "policy:assumptions/balancedReturn"
+          },
+          {
+            "id": "g-buffer",
+            "label": "12-month income buffer (irregular income)",
+            "amountNeeded": 1800000,
+            "inflatedAmount": 2022480,
+            "horizonMonths": 24,
+            "monthlySip": 79130,
+            "bucket": "protected",
+            "assetClass": "corp_bond",
+            "assumedReturn": 0.06,
+            "rateSource": "policy:assumptions/conservativeReturn"
+          }
+        ],
+        "sustainableIncome": null
+      },
+      "suggestedFunds": [
+        {
+          "schemeCode": "119118",
+          "purpose": "retirement corpus at 58",
+          "pct": 72
+        },
+        {
+          "schemeCode": "120692",
+          "purpose": "12-month income buffer (irregular income)",
+          "pct": 28
+        }
+      ],
+      "contradictions": [
+        {
+          "id": "irregular_income",
+          "severity": "amber",
+          "text": "irregular income — larger buffer + SIP flexibility required"
+        }
+      ],
+      "gates": [
+        {
+          "id": "identity",
+          "status": "green",
+          "why": [
+            "all suggested funds resolve to vault entries"
+          ]
+        },
+        {
+          "id": "freshness",
+          "status": "amber",
+          "why": [
+            "2 fund(s) lack verified TER — costs can't be compared until factsheets land"
+          ]
+        },
+        {
+          "id": "horizon_liquidity",
+          "status": "green",
+          "why": [
+            "no short-horizon goal in volatile assets"
+          ]
+        },
+        {
+          "id": "goal_protection",
+          "status": "green",
+          "why": [
+            "protected goals are in liquid/short-debt buckets"
+          ]
+        },
+        {
+          "id": "concentration",
+          "status": "amber",
+          "why": [
+            "119118 at 72% of allocation"
+          ]
+        },
+        {
+          "id": "risk_capacity_tolerance",
+          "status": "green",
+          "why": [
+            "capacity=2 (irregular income (-1); long horizon 14y (+1); 3 dependents (-1))",
+            "tolerance=4 (stated moderate_high)"
+          ]
+        },
+        {
+          "id": "escalations",
+          "status": "amber",
+          "why": [
+            "irregular income — larger buffer + SIP flexibility required"
+          ]
+        },
+        {
+          "id": "citation_coverage",
+          "status": "green",
+          "why": [
+            "every computed number traces to a tagged input"
+          ]
+        },
+        {
+          "id": "disclosure",
+          "status": "amber",
+          "why": [
+            "no draft yet — disclosure check pending"
+          ]
+        }
+      ],
+      "gateSummary": {
+        "red": 0,
+        "amber": 4,
+        "green": 5
+      }
+    },
+    {
+      "persona": "patna-doctor-38",
+      "label": "Patna doctor, 38 — risk-averse, parents' medical corpus",
+      "numbers": {
+        "monthlyEssentials": 154000,
+        "emergencyTarget": 924000,
+        "emergencyGap": 0,
+        "investableMonthly": 66000,
+        "goals": [
+          {
+            "id": "g-parents",
+            "label": "parents' medical corpus (unpredictable timing)",
+            "amountNeeded": 2500000,
+            "inflatedAmount": 2977540,
+            "horizonMonths": 36,
+            "monthlySip": 75318,
+            "bucket": "protected",
+            "assetClass": "short_debt",
+            "assumedReturn": 0.06,
+            "rateSource": "policy:assumptions/conservativeReturn"
+          },
+          {
+            "id": "g-own",
+            "label": "own retirement (started late)",
+            "amountNeeded": 40000000,
+            "inflatedAmount": 128285419,
+            "horizonMonths": 240,
+            "monthlySip": 276268,
+            "bucket": "growth",
+            "assetClass": "corp_bond",
+            "assumedReturn": 0.06,
+            "rateSource": "policy:assumptions/conservativeReturn"
+          }
+        ],
+        "sustainableIncome": null
+      },
+      "suggestedFunds": [
+        {
+          "schemeCode": "119016",
+          "purpose": "parents' medical corpus (unpredictable timing)",
+          "pct": 21
+        },
+        {
+          "schemeCode": "120692",
+          "purpose": "own retirement (started late)",
+          "pct": 79
+        }
+      ],
+      "contradictions": [],
+      "gates": [
+        {
+          "id": "identity",
+          "status": "green",
+          "why": [
+            "all suggested funds resolve to vault entries"
+          ]
+        },
+        {
+          "id": "freshness",
+          "status": "amber",
+          "why": [
+            "2 fund(s) lack verified TER — costs can't be compared until factsheets land"
+          ]
+        },
+        {
+          "id": "horizon_liquidity",
+          "status": "green",
+          "why": [
+            "no short-horizon goal in volatile assets"
+          ]
+        },
+        {
+          "id": "goal_protection",
+          "status": "green",
+          "why": [
+            "protected goals are in liquid/short-debt buckets"
+          ]
+        },
+        {
+          "id": "concentration",
+          "status": "amber",
+          "why": [
+            "120692 at 79% of allocation"
+          ]
+        },
+        {
+          "id": "risk_capacity_tolerance",
+          "status": "green",
+          "why": [
+            "capacity=4 (stable income (0); long horizon 20y (+1))",
+            "tolerance=1 (stated low)"
+          ]
+        },
+        {
+          "id": "escalations",
+          "status": "green",
+          "why": [
+            "no behavioural flags"
+          ]
+        },
+        {
+          "id": "citation_coverage",
+          "status": "green",
+          "why": [
+            "every computed number traces to a tagged input"
+          ]
+        },
+        {
+          "id": "disclosure",
+          "status": "amber",
+          "why": [
+            "no draft yet — disclosure check pending"
+          ]
+        }
+      ],
+      "gateSummary": {
+        "red": 0,
+        "amber": 3,
+        "green": 6
+      }
+    },
+    {
+      "persona": "chennai-retiree-68",
+      "label": "Chennai retiree, 68 — ₹80L pension corpus, 25y income need",
+      "numbers": {
+        "monthlyEssentials": 0,
+        "emergencyTarget": 0,
+        "emergencyGap": 0,
+        "investableMonthly": 0,
+        "goals": [
+          {
+            "id": "g-income",
+            "label": "monthly income for 25 years",
+            "amountNeeded": 35000,
+            "inflatedAmount": 150215,
+            "horizonMonths": 300,
+            "monthlySip": 133,
+            "bucket": "income",
+            "assetClass": "cons_hybrid",
+            "assumedReturn": 0.09,
+            "rateSource": "policy:assumptions/balancedReturn"
+          },
+          {
+            "id": "g-health",
+            "label": "health contingency",
+            "amountNeeded": 1500000,
+            "inflatedAmount": 1500000,
+            "horizonMonths": 0,
+            "monthlySip": 1500000,
+            "bucket": "protected",
+            "assetClass": "short_debt",
+            "assumedReturn": 0.06,
+            "rateSource": "policy:assumptions/conservativeReturn"
+          }
+        ],
+        "incomeMonthlyRequired": 35000,
+        "sustainableIncome": {
+          "monthly": 51544,
+          "note": "annuity-style drawdown @ 6.0%/yr over 300m, corpus ₹80L (illustrative, no guarantee)"
+        }
+      },
+      "suggestedFunds": [
+        {
+          "schemeCode": "119118",
+          "purpose": "monthly income for 25 years",
+          "pct": 0
+        },
+        {
+          "schemeCode": "119016",
+          "purpose": "health contingency",
+          "pct": 100
+        }
+      ],
+      "contradictions": [],
+      "gates": [
+        {
+          "id": "identity",
+          "status": "green",
+          "why": [
+            "all suggested funds resolve to vault entries"
+          ]
+        },
+        {
+          "id": "freshness",
+          "status": "amber",
+          "why": [
+            "2 fund(s) lack verified TER — costs can't be compared until factsheets land"
+          ]
+        },
+        {
+          "id": "horizon_liquidity",
+          "status": "green",
+          "why": [
+            "no short-horizon goal in volatile assets"
+          ]
+        },
+        {
+          "id": "goal_protection",
+          "status": "green",
+          "why": [
+            "protected goals are in liquid/short-debt buckets"
+          ]
+        },
+        {
+          "id": "concentration",
+          "status": "amber",
+          "why": [
+            "119016 at 100% of allocation"
+          ]
+        },
+        {
+          "id": "risk_capacity_tolerance",
+          "status": "green",
+          "why": [
+            "capacity=3 (stable income (0); long horizon 25y (+1); buffer <1m (-2); existing corpus (+1))",
+            "tolerance=2 (stated low_moderate)"
+          ]
+        },
+        {
+          "id": "escalations",
+          "status": "green",
+          "why": [
+            "no behavioural flags"
+          ]
+        },
+        {
+          "id": "citation_coverage",
+          "status": "green",
+          "why": [
+            "every computed number traces to a tagged input"
+          ]
+        },
+        {
+          "id": "disclosure",
+          "status": "amber",
+          "why": [
+            "no draft yet — disclosure check pending"
+          ]
+        }
+      ],
+      "gateSummary": {
+        "red": 0,
+        "amber": 3,
+        "green": 6
+      }
+    },
+    {
+      "persona": "mumbai-trader-29",
+      "label": "Mumbai F&O trader, 29 — wants 'high returns fast'",
+      "numbers": {
+        "monthlyEssentials": 98000,
+        "emergencyTarget": 588000,
+        "emergencyGap": 392000,
+        "investableMonthly": 42000,
+        "goals": [
+          {
+            "id": "g-wealth",
+            "label": "wealth accumulation",
+            "amountNeeded": null,
+            "inflatedAmount": null,
+            "horizonMonths": 120,
+            "monthlySip": null,
+            "bucket": "growth",
+            "assetClass": "cons_hybrid",
+            "assumedReturn": 0.09,
+            "rateSource": "policy:assumptions/balancedReturn"
+          },
+          {
+            "id": "g-trade",
+            "label": "F&O capital (separate)",
+            "amountNeeded": 500000,
+            "inflatedAmount": 514782,
+            "horizonMonths": 6,
+            "monthlySip": 84309,
+            "bucket": "protected",
+            "assetClass": "liquid",
+            "assumedReturn": 0.06,
+            "rateSource": "policy:assumptions/conservativeReturn"
+          }
+        ],
+        "sustainableIncome": null
+      },
+      "suggestedFunds": [
+        {
+          "schemeCode": "119118",
+          "purpose": "wealth accumulation",
+          "pct": 0
+        },
+        {
+          "schemeCode": "119800",
+          "purpose": "F&O capital (separate)",
+          "pct": 100
+        }
+      ],
+      "contradictions": [
+        {
+          "id": "thin_buffer",
+          "severity": "amber",
+          "text": "emergency buffer 2m < 3m — build liquidity before long-horizon equity"
+        }
+      ],
+      "gates": [
+        {
+          "id": "identity",
+          "status": "green",
+          "why": [
+            "all suggested funds resolve to vault entries"
+          ]
+        },
+        {
+          "id": "freshness",
+          "status": "amber",
+          "why": [
+            "2 fund(s) lack verified TER — costs can't be compared until factsheets land"
+          ]
+        },
+        {
+          "id": "horizon_liquidity",
+          "status": "green",
+          "why": [
+            "no short-horizon goal in volatile assets"
+          ]
+        },
+        {
+          "id": "goal_protection",
+          "status": "green",
+          "why": [
+            "protected goals are in liquid/short-debt buckets"
+          ]
+        },
+        {
+          "id": "concentration",
+          "status": "amber",
+          "why": [
+            "119800 at 100% of allocation"
+          ]
+        },
+        {
+          "id": "risk_capacity_tolerance",
+          "status": "green",
+          "why": [
+            "capacity=2 (stable income (0); buffer <3m (-1))",
+            "tolerance=5 (stated very_high_stated)"
+          ]
+        },
+        {
+          "id": "escalations",
+          "status": "red",
+          "why": [
+            "escalate: loss_chasing_history",
+            "escalate: wants_quick_returns"
+          ]
+        },
+        {
+          "id": "citation_coverage",
+          "status": "green",
+          "why": [
+            "every computed number traces to a tagged input"
+          ]
+        },
+        {
+          "id": "disclosure",
+          "status": "amber",
+          "why": [
+            "no draft yet — disclosure check pending"
+          ]
+        }
+      ],
+      "gateSummary": {
+        "red": 1,
+        "amber": 3,
+        "green": 5
+      }
+    }
+  ]
+}

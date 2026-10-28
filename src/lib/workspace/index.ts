@@ -5,7 +5,7 @@ import {
   mkdirSync,
   readFileSync,
   readdirSync,
-  realpathSync,
+
   renameSync,
   rmSync,
   statSync,

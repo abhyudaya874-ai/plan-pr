@@ -1,0 +1,48 @@
+{
+  "schema": "policy_values_v1",
+  "note": "Adviser-planning assumptions (ILLUSTRATIVE, not fund facts, not return promises). Every value is editable and owner-tagged. Advisory/tax/fee figures must come from documents, not this file.",
+  "values": {
+    "bufferTargetMonths": {
+      "value": 6,
+      "source": "adviser_default",
+      "effective_date": "2026-10-28",
+      "retrieved_at": "2026-10-28",
+      "owner": "adviser"
+    },
+    "monthlyEssentialsFactor": {
+      "value": 0.7,
+      "source": "adviser_default",
+      "effective_date": "2026-10-28",
+      "retrieved_at": "2026-10-28",
+      "owner": "adviser"
+    },
+    "inflationRate": {
+      "value": 0.06,
+      "source": "adviser_assumption_illustrative",
+      "effective_date": "2026-10-28",
+      "retrieved_at": "2026-10-28",
+      "owner": "adviser"
+    },
+    "conservativeReturn": {
+      "value": 0.06,
+      "source": "adviser_assumption_illustrative",
+      "effective_date": "2026-10-28",
+      "retrieved_at": "2026-10-28",
+      "owner": "adviser"
+    },
+    "balancedReturn": {
+      "value": 0.09,
+      "source": "adviser_assumption_illustrative",
+      "effective_date": "2026-10-28",
+      "retrieved_at": "2026-10-28",
+      "owner": "adviser"
+    },
+    "equityReturn": {
+      "value": 0.11,
+      "source": "adviser_assumption_illustrative",
+      "effective_date": "2026-10-28",
+      "retrieved_at": "2026-10-28",
+      "owner": "adviser"
+    }
+  }
+}
