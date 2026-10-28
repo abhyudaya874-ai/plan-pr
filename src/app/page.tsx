@@ -22,6 +22,7 @@ export default function Page() {
   const [history, setHistory] = useState<{ role: string; content: string; bridge: string | null }[]>([]);
   const { turns, busy, send, stop, clear, filesVersion } = useChatStream();
   const bottomRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   // init session + persisted model
   useEffect(() => {
@@ -161,7 +162,14 @@ export default function Page() {
               </div>
             ))}
             {turns.map((t) => (
-              <TurnView key={t.id} turn={t} />
+              <TurnView
+                key={t.id}
+                turn={t}
+                onUseSuggestion={(text) => {
+                  setInput(text);
+                  inputRef.current?.focus();
+                }}
+              />
             ))}
             <div ref={bottomRef} />
           </div>
@@ -171,6 +179,7 @@ export default function Page() {
         <div className="border-t border-zinc-800 px-4 py-3">
           <div className="mx-auto flex max-w-2xl items-end gap-2 rounded-2xl border border-zinc-700 bg-[#131316] p-2 focus-within:border-[#c9854a]/50">
             <textarea
+              ref={inputRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => {
@@ -234,7 +243,23 @@ function RailItem({ label, active, badge }: { label: string; active?: boolean; b
   );
 }
 
-function TurnView({ turn }: { turn: import("@/components/chat/useChatStream").Turn }) {
+/** Bridge text -> a follow-up instruction the user can edit/send. */
+function bridgeToFollowUp(b: string): string {
+  const core = b
+    .replace(/^(want me to|shall i|shall we|should i|would you like me to|how about i)\s+/i, "")
+    .replace(/\?\s*$/, "")
+    .replace(/\bor\b/i, "and")
+    .trim();
+  return core ? `yes — ${core}` : b;
+}
+
+function TurnView({
+  turn,
+  onUseSuggestion,
+}: {
+  turn: import("@/components/chat/useChatStream").Turn;
+  onUseSuggestion: (text: string) => void;
+}) {
   const live = !turn.done;
   return (
     <div className="mb-8">
@@ -259,10 +284,14 @@ function TurnView({ turn }: { turn: import("@/components/chat/useChatStream").Tu
       )}
       <SourceChips sources={turn.sources} cited={turn.cited.length ? turn.cited : turn.sources.map((s) => s.n)} />
       {turn.bridge && turn.done && (
-        <div className="mt-3 flex items-start gap-2 rounded-lg border border-[#c9854a]/20 bg-[#c9854a]/5 px-3 py-2 text-[12.5px] text-zinc-400">
+        <button
+          onClick={() => onUseSuggestion(bridgeToFollowUp(turn.bridge!))}
+          title="use as your next message"
+          className="mt-3 flex w-full items-start gap-2 rounded-lg border border-[#c9854a]/20 bg-[#c9854a]/5 px-3 py-2 text-left text-[12.5px] text-zinc-400 transition hover:border-[#c9854a]/50 hover:text-zinc-300"
+        >
           <span className="text-[#c9854a]">↪</span>
           <span>{turn.bridge}</span>
-        </div>
+        </button>
       )}
       {turn.telemetry && turn.done && (
         <div className="mt-2 flex flex-wrap gap-3 text-[10px] text-zinc-600">
