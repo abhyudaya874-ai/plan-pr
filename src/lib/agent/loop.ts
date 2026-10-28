@@ -28,7 +28,7 @@ export interface LoopResult {
   /** Answer text WITHOUT the trailing ↪ bridge line. */
   answer: string;
   bridge: string | null;
-  toolCallsMade: { name: string; ok: boolean }[];
+  toolCallsMade: { name: string; ok: boolean; note?: string }[];
   telemetry: Telemetry[];
   modelSwitches: number;
   sources: SourceRef[];
@@ -347,7 +347,7 @@ export async function runLoop(
           }
         }
 
-        result.toolCallsMade.push({ name: call.name, ok: exec.ok });
+        result.toolCallsMade.push({ name: call.name, ok: exec.ok, note: summarize(exec.resultText) });
         messages.push({
           role: "tool",
           tool_call_id: call.id,
@@ -451,16 +451,23 @@ export async function runLoop(
   flushText("", true);
 
   // Degraded completion: tools ran but the synthesis call died — emit an
-  // honest deterministic summary so the turn persists with real context.
+  // honest deterministic summary with REAL outcomes so the turn persists
+  // with useful context (and the answer isn't "names of tools only").
   if (!result.answer.trim() && result.toolCallsMade.length > 0) {
-    const parts = fileChanges.map((c) => `${c.op} ${c.path} (${c.bytes}b)`);
-    const what = parts.length
-      ? `Done — saved: ${parts.join(", ")}.`
-      : `Done — ${result.toolCallsMade.map((t) => t.name).join(", ")} completed.`;
-    const text = `${what}\n\n*Degraded completion — the model call that would explain this was rate-limited; the work above is real and saved.*`;
+    const lines: string[] = [];
+    if (fileChanges.length) {
+      lines.push(`**Saved:** ${fileChanges.map((c) => `\`${c.path}\` (${c.op}, ${c.bytes}b)`).join(", ")}`);
+    }
+    const notes = result.toolCallsMade
+      .filter((t) => t.note)
+      .map((t) => `- ${t.name} → ${t.note}${t.ok ? "" : " (failed)"}`);
+    if (notes.length) lines.push("**Work log:**\n" + notes.join("\n"));
+    const text =
+      (lines.length ? lines.join("\n\n") : "Done.") +
+      "\n\n*Degraded completion — the model call that would write this up was rate-limited; the work above is real and saved.*";
     sse.emit({ type: "token", text });
     result.answer = text;
-    result.bridge = 'Say "continue" — I\'ll retry the full write-up on another model.';
+    result.bridge = "Retry the full write-up?";
   }
 
   // Citation post-processing: strip invented [n] markers (invariant I2).
