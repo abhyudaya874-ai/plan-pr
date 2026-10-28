@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { appendCommit, loadCase, loadCommit, type PlanCase } from "./index";
+import { appendCommit, loadCase, type PlanCase } from "./index";
 
 /**
  * Approval = advisory sign-off bound to a content fingerprint (I4).

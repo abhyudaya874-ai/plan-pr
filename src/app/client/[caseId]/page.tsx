@@ -57,7 +57,7 @@ export default async function ClientPage({
             <p className="mt-4 text-[11px] leading-5 text-zinc-500">{receipt!.disclosure}</p>
             <p className="mt-2 text-[11px] text-zinc-400">
               Every figure in this document traces to a verified field or deterministic
-              calculation. Approval is adviser's plan sign-off — not trade consent.
+              calculation. Approval is adviser plan sign-off — not trade consent.
             </p>
           </>
         )}

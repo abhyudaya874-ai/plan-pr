@@ -1,0 +1,300 @@
+{
+  "generatedAt": "2026-10-28T06:40:10.614Z",
+  "score": "25/25",
+  "results": [
+    {
+      "id": "q1",
+      "q": "NAV of Parag Parikh Flexi Cap",
+      "expect": "value",
+      "got": "value",
+      "pass": true,
+      "value": 89.2762,
+      "blame": {
+        "doc": "AMFI NAVAll.txt",
+        "url": "https://portal.amfiindia.com/spages/NAVAll.txt",
+        "retrievedAt": "2026-10-28"
+      }
+    },
+    {
+      "id": "q2",
+      "q": "NAV of SBI Liquid Fund",
+      "expect": "value",
+      "got": "value",
+      "pass": true,
+      "value": 4470.6516,
+      "blame": {
+        "doc": "AMFI NAVAll.txt",
+        "url": "https://portal.amfiindia.com/spages/NAVAll.txt",
+        "retrievedAt": "2026-10-28"
+      }
+    },
+    {
+      "id": "q3",
+      "q": "NAV of UTI Nifty 50 Index",
+      "expect": "value",
+      "got": "value",
+      "pass": true,
+      "value": 160.2276,
+      "blame": {
+        "doc": "AMFI NAVAll.txt",
+        "url": "https://portal.amfiindia.com/spages/NAVAll.txt",
+        "retrievedAt": "2026-10-28"
+      }
+    },
+    {
+      "id": "q4",
+      "q": "NAV of Nippon India Small Cap",
+      "expect": "value",
+      "got": "value",
+      "pass": true,
+      "value": 193.8273,
+      "blame": {
+        "doc": "AMFI NAVAll.txt",
+        "url": "https://portal.amfiindia.com/spages/NAVAll.txt",
+        "retrievedAt": "2026-10-28"
+      }
+    },
+    {
+      "id": "q5",
+      "q": "NAV of Mirae ELSS Tax Saver",
+      "expect": "value",
+      "got": "value",
+      "pass": true,
+      "value": 53.616,
+      "blame": {
+        "doc": "AMFI NAVAll.txt",
+        "url": "https://portal.amfiindia.com/spages/NAVAll.txt",
+        "retrievedAt": "2026-10-28"
+      }
+    },
+    {
+      "id": "q6",
+      "q": "expense ratio of PPFAS flexi cap",
+      "expect": "unavailable",
+      "got": "unavailable",
+      "pass": true,
+      "value": null,
+      "blame": null
+    },
+    {
+      "id": "q7",
+      "q": "exit load of Nippon small cap",
+      "expect": "unavailable",
+      "got": "unavailable",
+      "pass": true,
+      "value": null,
+      "blame": null
+    },
+    {
+      "id": "q8",
+      "q": "AUM of SBI Liquid",
+      "expect": "unavailable",
+      "got": "unavailable",
+      "pass": true,
+      "value": null,
+      "blame": null
+    },
+    {
+      "id": "q9",
+      "q": "benchmark of UTI Nifty 50",
+      "expect": "unavailable",
+      "got": "unavailable",
+      "pass": true,
+      "value": null,
+      "blame": null
+    },
+    {
+      "id": "q10",
+      "q": "fund manager of Mirae Large Midcap",
+      "expect": "unavailable",
+      "got": "unavailable",
+      "pass": true,
+      "value": null,
+      "blame": null
+    },
+    {
+      "id": "q11",
+      "q": "riskometer of HDFC Conservative Hybrid",
+      "expect": "unavailable",
+      "got": "unavailable",
+      "pass": true,
+      "value": null,
+      "blame": null
+    },
+    {
+      "id": "q12",
+      "q": "inception date of SBI Gold",
+      "expect": "unavailable",
+      "got": "unavailable",
+      "pass": true,
+      "value": null,
+      "blame": null
+    },
+    {
+      "id": "q13",
+      "q": "1y returns of PPFAS flexi cap",
+      "expect": "unavailable",
+      "got": "unavailable",
+      "pass": true,
+      "value": null,
+      "blame": null
+    },
+    {
+      "id": "q14",
+      "q": "category of ICICI Corporate Bond",
+      "expect": "value",
+      "got": "value",
+      "pass": true,
+      "value": "corporate_bond",
+      "blame": {
+        "doc": "AMFI NAVAll.txt",
+        "url": "https://portal.amfiindia.com/spages/NAVAll.txt",
+        "retrievedAt": "2026-10-28"
+      }
+    },
+    {
+      "id": "q15",
+      "q": "nav date of HDFC Short Term",
+      "expect": "value",
+      "got": "value",
+      "pass": true,
+      "value": "27-Oct-2026",
+      "blame": {
+        "doc": "AMFI NAVAll.txt",
+        "url": "https://portal.amfiindia.com/spages/NAVAll.txt",
+        "retrievedAt": "2026-10-28"
+      }
+    },
+    {
+      "id": "q16",
+      "q": "NAV of Quantum Ultra Alpha fund",
+      "expect": "not_found",
+      "got": "not_found",
+      "pass": true,
+      "value": null,
+      "blame": null
+    },
+    {
+      "id": "q17",
+      "q": "NAV of made-up SBI Bitcoin fund",
+      "expect": "not_found",
+      "got": "not_found",
+      "pass": true,
+      "value": null,
+      "blame": null
+    },
+    {
+      "id": "q18",
+      "q": "min SIP of Mirae ELSS",
+      "expect": "unavailable",
+      "got": "unavailable",
+      "pass": true,
+      "value": null,
+      "blame": null
+    },
+    {
+      "id": "q19",
+      "q": "3y returns of UTI Nifty 50",
+      "expect": "unavailable",
+      "got": "unavailable",
+      "pass": true,
+      "value": null,
+      "blame": null
+    },
+    {
+      "id": "q20",
+      "q": "5y returns of Nippon Small Cap",
+      "expect": "unavailable",
+      "got": "unavailable",
+      "pass": true,
+      "value": null,
+      "blame": null
+    },
+    {
+      "id": "q21",
+      "q": "NAV of ICICI Balanced Advantage",
+      "expect": "value",
+      "got": "value",
+      "pass": true,
+      "value": 84.98,
+      "blame": {
+        "doc": "AMFI NAVAll.txt",
+        "url": "https://portal.amfiindia.com/spages/NAVAll.txt",
+        "retrievedAt": "2026-10-28"
+      }
+    },
+    {
+      "id": "q22",
+      "q": "NAV of SBI Aggressive Hybrid",
+      "expect": "value",
+      "got": "value",
+      "pass": true,
+      "value": 336.0053,
+      "blame": {
+        "doc": "AMFI NAVAll.txt",
+        "url": "https://portal.amfiindia.com/spages/NAVAll.txt",
+        "retrievedAt": "2026-10-28"
+      }
+    },
+    {
+      "id": "q23",
+      "q": "NAV of Mirae Large and Midcap",
+      "expect": "value",
+      "got": "value",
+      "pass": true,
+      "value": 165.735,
+      "blame": {
+        "doc": "AMFI NAVAll.txt",
+        "url": "https://portal.amfiindia.com/spages/NAVAll.txt",
+        "retrievedAt": "2026-10-28"
+      }
+    },
+    {
+      "id": "q24",
+      "q": "regular TER of PPFAS flexi cap",
+      "expect": "unavailable",
+      "got": "unavailable",
+      "pass": true,
+      "value": null,
+      "blame": null
+    },
+    {
+      "id": "q25",
+      "q": "since-inception returns of SBI Liquid",
+      "expect": "unavailable",
+      "got": "unavailable",
+      "pass": true,
+      "value": null,
+      "blame": null
+    }
+  ],
+  "liveProbes": [
+    {
+      "q": "expense ratio of PPFAS flexi cap",
+      "answer": "I don't have the current expense ratio for the Parag Parikh Flexi Cap Fund handy because the flatsheet hasn't been ingested into the vault yet. If you drop the latest PDF into `data/sources/factsheets/`, I can pull the exact figure for you.\n\n",
+      "toolCalls": [
+        "vault_lookup",
+        "web_search"
+      ],
+      "invented": false
+    },
+    {
+      "q": "NAV of Quantum Ultra Alpha fund",
+      "answer": "I don't have access to the current NAV for the Quantum Ultra Alpha fund. It's not in my verified database, and I can't search the live web right now.",
+      "toolCalls": [
+        "vault_lookup",
+        "web_search"
+      ],
+      "invented": false
+    },
+    {
+      "q": "NAV of Parag Parikh Flexi Cap",
+      "answer": "I don't have the latest NAV for this fund in my records, and I'm unable to fetch the live market data right now. You can check the PPFAS website or your preferred investing platform for the most up-to-date figure.",
+      "toolCalls": [
+        "vault_lookup",
+        "web_search"
+      ],
+      "invented": false
+    }
+  ]
+}

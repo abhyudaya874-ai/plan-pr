@@ -1,0 +1,2 @@
+key,provider,tier,verified,ttft_ms,total_ms,tools,json,typos,at
+nvidia:minimaxai/minimax-m3.1-flash,nvidia,fast,true,1444,2616,true,false,,,2026-10-28T05:34:10.070Z

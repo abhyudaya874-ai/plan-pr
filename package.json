@@ -13,6 +13,8 @@
     "models:probe": "tsx scripts/models-probe.ts",
     "vault:build": "tsx scripts/vault-build.ts",
     "prompt:eval": "tsx scripts/prompt-eval.ts",
+    "planner:fixtures": "tsx scripts/planner-fixtures.ts",
+    "redteam": "tsx scripts/redteam.ts",
     "eval": "tsx scripts/eval.ts",
     "repro": "tsx scripts/repro.ts"
   },
