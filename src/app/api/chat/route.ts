@@ -46,6 +46,27 @@ function rateOk(ip: string): boolean {
 
 const encoder = new TextEncoder();
 
+/** GET /api/chat?sessionId -> prior turns for refresh-resume. */
+export async function GET(req: Request): Promise<Response> {
+  const sessionId = new URL(req.url).searchParams.get("sessionId");
+  if (!sessionId || sessionId.length > 128) {
+    return Response.json({ error: "bad_request" }, { status: 400 });
+  }
+  const rows = loadHistory(sessionId, 60)
+    .slice()
+    .reverse()
+    .map((r) => {
+      let meta: Record<string, unknown> | null = null;
+      try {
+        meta = r.meta ? (JSON.parse(r.meta) as Record<string, unknown>) : null;
+      } catch {
+        meta = null;
+      }
+      return { role: r.role, content: r.content, bridge: meta?.bridge ?? null };
+    });
+  return Response.json({ messages: rows });
+}
+
 export async function POST(req: Request): Promise<Response> {
   const ip =
     req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "local";

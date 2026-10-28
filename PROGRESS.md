@@ -27,7 +27,7 @@ secrets in repo/logs/client; I7 `pnpm repro` reproduces every reported number.
 | 95 eval+submission | pending | | |
 
 ## Current state
-Phases 00,10,20,30(partial-no-tavily-key),40 + prompt-evals done. Next: /50-ui-shell.
+Layer A complete: phases 00,10,20,30(partial),40,50 + prompt-evals done. Next: /60-case-repo-and-vault — STOP: needs the fund-universe answer from the user.
 
 ## Blockers
 - **TAVILY_API_KEY missing** → web_search returns "unavailable" (honest); fetch_url still works via guarded direct fetch. Drop the key into .env to enable live search.
