@@ -128,26 +128,37 @@ export async function runLoop(
   };
 
   // Text flushing with a tail hold-back so the ↪ bridge is never emitted as
-  // answer tokens: keep the tail until the stream ends.
+  // answer tokens: keep the tail until the stream ends. `streamed` accumulates
+  // ALL emitted text so result.answer reflects the full answer (previously it
+  // captured only the final ~120-char tail -> broken history context).
   let tail = "";
+  let streamed = "";
   let finished = false;
   const flushText = (incoming: string, final = false) => {
-    let text = tail + incoming;
+    const text = tail + incoming;
     tail = "";
     if (final) {
-      const idx = text.lastIndexOf("↪");
+      const full = streamed + text;
+      const idx = full.lastIndexOf("↪");
       if (idx >= 0) {
-        result.bridge = text.slice(idx + 1).trim() || null;
-        text = text.slice(0, idx);
+        result.bridge = full.slice(idx + 1).trim() || null;
+        const pre = full.slice(0, idx);
+        const unsent = pre.slice(streamed.length);
+        if (unsent) sse.emit({ type: "token", text: unsent });
+        result.answer = pre.trimEnd();
+      } else {
+        if (text) sse.emit({ type: "token", text });
+        result.answer = full.trimEnd();
       }
-      if (text) sse.emit({ type: "token", text });
-      result.answer = text.trimEnd();
       return;
     }
     const cut = Math.max(0, text.length - 120);
     const emitPart = text.slice(0, cut);
     tail = text.slice(cut);
-    if (emitPart) sse.emit({ type: "token", text: emitPart });
+    if (emitPart) {
+      sse.emit({ type: "token", text: emitPart });
+      streamed += emitPart;
+    }
   };
 
   for (let round = 0; round <= maxRounds && !finished; round++) {
@@ -224,11 +235,23 @@ export async function runLoop(
           result.telemetry.push(ev.telemetry);
           sse.emit({ type: "telemetry", ...ev.telemetry });
           break;
-        case "error":
+        case "error": {
           failed = true;
-          emitStep("model_switch", "Model error", "error", ev.error.message);
-          sse.emit({ type: "error", code: ev.error.kind, message: userSafeError(ev.error.message) });
+          // Tools already did real work (files written, searches run): degrade
+          // to a deterministic completion rather than a dead turn, so the turn
+          // persists and the NEXT message keeps full context.
+          const canDegrade = result.toolCallsMade.length > 0 || fileChanges.length > 0;
+          emitStep(
+            "model_switch",
+            canDegrade ? "Model unavailable — degraded completion" : "Model error",
+            "error",
+            ev.error.message,
+          );
+          if (!canDegrade) {
+            sse.emit({ type: "error", code: ev.error.kind, message: userSafeError(ev.error.message) });
+          }
           break;
+        }
       }
     }
     closeThink();
@@ -242,10 +265,11 @@ export async function runLoop(
         pendingCalls.push({ id: `json_${round}`, name: action.name, argsJson: JSON.stringify(action.args) });
         roundText = "";
         tail = "";
+        streamed = "";
       }
     }
 
-    if (failed) return result;
+    if (failed) break;
     if (pendingCalls.length === 0) {
       finished = true;
       break;
@@ -425,6 +449,19 @@ export async function runLoop(
   }
 
   flushText("", true);
+
+  // Degraded completion: tools ran but the synthesis call died — emit an
+  // honest deterministic summary so the turn persists with real context.
+  if (!result.answer.trim() && result.toolCallsMade.length > 0) {
+    const parts = fileChanges.map((c) => `${c.op} ${c.path} (${c.bytes}b)`);
+    const what = parts.length
+      ? `Done — saved: ${parts.join(", ")}.`
+      : `Done — ${result.toolCallsMade.map((t) => t.name).join(", ")} completed.`;
+    const text = `${what}\n\n*Degraded completion — the model call that would explain this was rate-limited; the work above is real and saved.*`;
+    sse.emit({ type: "token", text });
+    result.answer = text;
+    result.bridge = 'Say "continue" — I\'ll retry the full write-up on another model.';
+  }
 
   // Citation post-processing: strip invented [n] markers (invariant I2).
   const scrub = scrubCitations(result.answer, sourceRegistry);

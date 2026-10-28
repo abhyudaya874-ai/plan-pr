@@ -278,8 +278,13 @@ async function handle(
     },
   );
 
-  if (result.answer) {
-    appendMessage(sessionId, "assistant", result.answer, {
+  if (result.answer || result.filesChanged.length) {
+    // Persist a compact work-log so the next turn's context sees file ops
+    // even when the model's own summary was thin or degraded.
+    const worklog = result.filesChanged.length
+      ? `\n\n[files changed: ${result.filesChanged.join(", ")}]`
+      : "";
+    appendMessage(sessionId, "assistant", (result.answer || "(files updated)") + worklog, {
       bridge: result.bridge,
       telemetry: result.telemetry.at(-1),
     });
