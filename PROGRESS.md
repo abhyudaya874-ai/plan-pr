@@ -15,8 +15,8 @@ secrets in repo/logs/client; I7 `pnpm repro` reproduces every reported number.
 |---|---|---|---|
 | 00 bootstrap | done | `pnpm typecheck` 0 err; `pnpm lint` 0 err; `pnpm test` 4/4 pass; `pnpm build` ok (ƒ /api/health); `curl :3001/api/health` -> `{"ok":true,"providers":{"openrouter":true,"groq":true,"nvidia":true,"tavily":false}}` | Next 16.4.3 + TS strict + nUIA; commit `chore: bootstrap project` |
 | 10 model gateway | done | `pnpm test` 19/19; `pnpm build` ok (ƒ /api/models); `pnpm models:probe` -> 13 verified (openrouter 7, groq 3, nvidia 3); `curl :3001/api/models` -> 13 models w/ ttft; `GROQ_API_KEY=bad tsx scripts/chat-smoke.ts` -> model_switch to nvidia, answer delivered | hedging fired naturally on cold provider; NIM free key has most functions unprovisioned (3 working found) |
-| 20 chat core | pending | | |
-| prompt-evals | pending | | |
+| 20 chat core | done | `pnpm test` 26/26; golden: `whts 2+2`->"4."+bridge; `wether in patna rn`->research, web_search unavailable, honest answer; `guarantee 20%`->refusal+bridge; invented `[1]` scrubbed (done.sources=[]); modelKey manual works | abort wired via req.signal->router->client; weak 7B models skip bridge sometimes (eval picks defaults) |
+| prompt-evals | done | `pnpm prompt:eval` 13 models x 21 cases; defaults -> chat/reason=openrouter:google/gemma-3-12b-it (95%, ~950ms), research=groq:qwen/qwen3.8-27b, check=openrouter:google/gemma-4-31b-it; csv -> workspace/_system/prompt-eval.csv | eval-chosen defaults now seed router ordering |
 | 30 research+citations | pending | | blocked on TAVILY_API_KEY (not provided) |
 | 40 workbench files | pending | | |
 | 50 ui shell | pending | | Layer A complete at end |
@@ -27,7 +27,7 @@ secrets in repo/logs/client; I7 `pnpm repro` reproduces every reported number.
 | 95 eval+submission | pending | | |
 
 ## Current state
-Phases 00+10 done. Next: /20-chat-core.
+Phases 00,10,20 + prompt-evals done. Next: /30-research-and-citations.
 Dev server note: port 3000 is used by another app on this machine; ours runs
 on 3001 (`pnpm dev` picks a free port).
 

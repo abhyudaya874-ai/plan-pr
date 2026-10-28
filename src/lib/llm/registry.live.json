@@ -661,5 +661,11 @@
         "at": "2026-10-28T05:34:10.070Z"
       }
     }
-  ]
+  ],
+  "defaults": {
+    "chat": "openrouter:google/gemma-3-12b-it",
+    "research": "groq:qwen/qwen3.8-27b",
+    "reason": "openrouter:google/gemma-3-12b-it",
+    "check": "openrouter:google/gemma-4-31b-it"
+  }
 }

@@ -19,6 +19,8 @@ export interface RouterDeps {
   now?: () => number;
   /** Max distinct models tried per request. */
   maxAttempts?: number;
+  /** Route defaults chosen by the prompt eval (quality signal, tried first). */
+  defaults?: Partial<Record<RouteClass, string>>;
 }
 
 const TIER_RANK: Record<ModelEntry["tier"], number> = {
@@ -104,6 +106,16 @@ export class ModelRouter {
     const ordered = live
       .filter(eligible)
       .sort((a, b) => tierPref(a) - tierPref(b) || this.score(a) - this.score(b));
+
+    // Eval-chosen default goes first in auto modes (measured quality signal).
+    if (!mode.startsWith("manual:")) {
+      const defKey = this.deps.defaults?.[route];
+      const di = defKey ? ordered.findIndex((m) => m.key === defKey) : -1;
+      if (di > 0) {
+        const [d] = ordered.splice(di, 1);
+        if (d) ordered.unshift(d);
+      }
+    }
 
     if (mode.startsWith("manual:")) {
       const key = mode.slice("manual:".length);

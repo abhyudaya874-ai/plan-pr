@@ -63,3 +63,22 @@
   `process.env` directly so tsx scripts can import it.
 - **tsx scripts**: no top-level await (tsx emits CJS); `.env` loaded manually
   (tsx doesn't auto-load it like Next).
+
+## 2026-10-28 — Phase 20 chat core
+
+- **Defaults now seed router ordering** (`RouterDeps.defaults`): eval-measured
+  quality goes first in auto modes; EWMA TTFT orders the rest. Manual mode
+  still wins outright.
+- **check default** = `openrouter:google/gemma-4-31b-it` (90% eval pass, json
+  capable); provider-diversity vs the drafter is handled by router's
+  `avoidProvider`, not the default itself.
+- **Citation scrub moved into phase 20** (ahead of schedule): live test showed
+  a model inventing `[1]` with zero tool calls. Invalid markers are stripped
+  from persisted text and excluded from `done.sources`; raw streamed tokens
+  may briefly show them — phase-50 UI renders chips only from `done.sources`.
+- **json-action fallback**: when a model without native tools emits a lone
+  `{"action","args"}` object it executes as a tool call; a one-line system
+  addendum advertises it only when tools are in play.
+- **Bridge reliability**: tiny models (~7B) sometimes omit the ↪ bridge —
+  recorded in eval; no synthesized fallback (would put words in the model's
+  mouth). Defaults were chosen partly on bridge reliability.

@@ -17,7 +17,6 @@ import {
   type ModelEntry,
   type ProviderId,
   type Registry,
-  type StreamEvent,
   type ToolDef,
 } from "../src/lib/llm/types";
 
