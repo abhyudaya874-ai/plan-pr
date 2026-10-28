@@ -27,7 +27,10 @@ secrets in repo/logs/client; I7 `pnpm repro` reproduces every reported number.
 | 95 eval+submission | pending | | |
 
 ## Current state
-Phases 00,10,20 + prompt-evals done. Next: /30-research-and-citations.
+Phases 00,10,20,30(partial-no-tavily-key) + prompt-evals done. Next: /40-workbench-files.
+
+## Blockers
+- **TAVILY_API_KEY missing** → web_search returns "unavailable" (honest); fetch_url still works via guarded direct fetch. Drop the key into .env to enable live search.
 Dev server note: port 3000 is used by another app on this machine; ours runs
 on 3001 (`pnpm dev` picks a free port).
 

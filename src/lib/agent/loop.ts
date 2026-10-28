@@ -270,6 +270,14 @@ export async function runLoop(
           name: call.name,
           content: `<tool_result tool="${call.name}" untrusted="true">${exec.resultText}</tool_result>`,
         });
+        // Web evidence: surface sources BEFORE the answer continues streaming.
+        const execSources = (exec.data?.sources ?? []) as SourceRef[];
+        for (const s of execSources) {
+          sse.emit({ type: "source", source: s });
+        }
+        if (exec.data?.injectionFlagged) {
+          emitStep("think", "Possible prompt-injection in fetched content (flagged)", "done");
+        }
         sse.emit({ type: "tool_result", toolCallId: call.id, ok: exec.ok, summary: summarize(exec.resultText) });
         emitStep(stepKind, stepLabel(call.name, parsedArgs), exec.ok ? "done" : "error");
       }),

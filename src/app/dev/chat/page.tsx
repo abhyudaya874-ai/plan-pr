@@ -8,9 +8,12 @@ export default function DevChat() {
   const [busy, setBusy] = useState(false);
   const [modelKey, setModelKey] = useState("");
   const abortRef = useRef<AbortController | null>(null);
-  const sessionRef = useRef(`dev-${Math.random().toString(36).slice(2, 10)}`);
+  const sessionRef = useRef("");
 
   async function send() {
+    if (!sessionRef.current) {
+      sessionRef.current = `dev-${Math.random().toString(36).slice(2, 10)}`;
+    }
     setBusy(true);
     setLog((l) => [...l, `>>> ${msg}`]);
     const ac = new AbortController();

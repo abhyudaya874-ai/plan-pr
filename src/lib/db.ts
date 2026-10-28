@@ -106,3 +106,24 @@ export function kvSet(k: string, v: string): void {
   const d = getDb();
   d.prepare("INSERT INTO kv(k, v) VALUES(?,?) ON CONFLICT(k) DO UPDATE SET v=excluded.v").run(k, v);
 }
+
+/** Web-search cache keyed by (query, YYYY-MM-DD) per rule 40. */
+export function searchCacheGet(key: string): unknown | null {
+  const d = getDb();
+  const row = d
+    .prepare("SELECT payload FROM search_cache WHERE cache_key=?")
+    .get(key) as { payload: string } | undefined;
+  if (!row) return null;
+  try {
+    return JSON.parse(row.payload) as unknown;
+  } catch {
+    return null;
+  }
+}
+
+export function searchCacheSet(key: string, payload: unknown): void {
+  const d = getDb();
+  d.prepare(
+    "INSERT INTO search_cache(cache_key, payload, created_at) VALUES(?,?,?) ON CONFLICT(cache_key) DO UPDATE SET payload=excluded.payload, created_at=excluded.created_at",
+  ).run(key, JSON.stringify(payload), new Date().toISOString());
+}

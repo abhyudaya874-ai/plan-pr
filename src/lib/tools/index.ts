@@ -1,4 +1,6 @@
 import { calcTool } from "./calc";
+import { makeWebTools } from "./web";
+import { TavilyClient } from "./tavily";
 import { unavailableTool, type Tool } from "./registry";
 
 /**
@@ -12,27 +14,11 @@ const jsonObj = (props: Record<string, unknown>, req: string[]) => ({
 });
 
 export function allTools(): Tool[] {
+  const tavilyKey = process.env.TAVILY_API_KEY?.trim();
+  const tavily = tavilyKey ? new TavilyClient(tavilyKey) : null;
   return [
     calcTool,
-    unavailableTool(
-      "web_search",
-      "30",
-      "Search the web for current facts (regulations, circulars, fees, news).",
-      jsonObj(
-        {
-          query: { type: "string" },
-          depth: { type: "string", enum: ["basic", "advanced"] },
-          maxResults: { type: "number" },
-        },
-        ["query"],
-      ),
-    ),
-    unavailableTool(
-      "fetch_url",
-      "30",
-      "Fetch and read a specific URL's content.",
-      jsonObj({ url: { type: "string" } }, ["url"]),
-    ),
+    ...makeWebTools({ tavily }),
     unavailableTool(
       "vault_lookup",
       "60",

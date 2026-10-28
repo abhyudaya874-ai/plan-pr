@@ -82,3 +82,18 @@
 - **Bridge reliability**: tiny models (~7B) sometimes omit the ↪ bridge —
   recorded in eval; no synthesized fallback (would put words in the model's
   mouth). Defaults were chosen partly on bridge reliability.
+
+## 2026-10-28 — Phase 30 research (docs pass)
+
+- **Tavily** — https://docs.tavily.com/documentation/api-reference/endpoint/search
+  + .../endpoint/extract : `POST https://api.tavily.com/search` and
+  `POST /extract`, auth `Authorization: Bearer <key>` (verified in
+  @tavily/core dist source). Search args used: `query`, `search_depth`
+  (basic|advanced), `max_results`, `time_range`; extract: `urls[]`,
+  `format:"text"`. Own thin fetch client for SSRF control, not the SDK.
+- **TAVILY_API_KEY absent**: `web_search`/`fetch_url` fall back to an honest
+  "unavailable" (search) and a guarded direct-HTTPS fetch (fetch_url only) —
+  never fake results.
+- **Direct fetch guard**: https only, no IP-literal/private hosts, DNS resolve
+  then re-check every address, redirects manually followed max 3 with the same
+  checks per hop, 6k char cap, 10s timeout.
