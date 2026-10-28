@@ -13,6 +13,7 @@ import {
   verifyChain,
 } from "@/lib/case";
 import { runPipeline } from "@/lib/case/pipeline";
+import { approve, approvalValid } from "@/lib/case/approval";
 
 const postSchema = z.discriminatedUnion("op", [
   z.object({
@@ -28,6 +29,12 @@ const postSchema = z.discriminatedUnion("op", [
   }),
   z.object({ op: z.literal("undo"), caseId: z.string().min(1) }),
   z.object({ op: z.literal("verify"), caseId: z.string().min(1) }),
+  z.object({
+    op: z.literal("approve"),
+    caseId: z.string().min(1),
+    approver: z.string().min(1).max(200),
+    force: z.boolean().optional(),
+  }),
 ]);
 
 export async function GET(req: Request): Promise<Response> {
@@ -65,6 +72,7 @@ export async function GET(req: Request): Promise<Response> {
     plan: readJson("plan.json"),
     gates: readJson("gates.json"),
     draft,
+    approval: approvalValid(c),
   });
 }
 
@@ -98,6 +106,20 @@ export async function POST(req: Request): Promise<Response> {
     }
     case "verify":
       return Response.json(verifyChain(b.caseId));
+    case "approve": {
+      const c = loadCase(b.caseId);
+      if (!c) return Response.json({ error: "not_found" }, { status: 404 });
+      const pipe = runPipeline(b.caseId);
+      const redGates = (pipe?.gates ?? []).filter((g) => g.status === "red");
+      if (redGates.length && !b.force) {
+        return Response.json(
+          { error: "red_gates", red: redGates.map((g) => g.id), hint: "resolve reds or force with a recorded reason" },
+          { status: 409 },
+        );
+      }
+      const receipt = approve(b.caseId, b.approver);
+      return Response.json({ receipt, case: loadCase(b.caseId) });
+    }
   }
 }
 

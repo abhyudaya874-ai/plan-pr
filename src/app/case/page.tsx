@@ -74,6 +74,8 @@ export default function CasePage() {
   const [blameInfo, setBlameInfo] = useState<Record<string, BlameInfo>>({});
   const [gates, setGates] = useState<{ id: string; name: string; status: string; why: string[] }[]>([]);
   const [draft, setDraft] = useState("");
+  const [approval, setApproval] = useState<{ valid: boolean; receipt: { contentHash: string; approvedBy: string; at: string } | null } | null>(null);
+  const [approver, setApprover] = useState("adviser-1");
 
   const refresh = useCallback(() => {
     void fetch("/api/case").then((r) => r.json()).then((d: { cases: CaseInfo[] }) => setCases(d.cases));
@@ -92,12 +94,14 @@ export default function CasePage() {
         chain: { ok: boolean };
         gates: { id: string; name: string; status: string; why: string[] }[] | null;
         draft: string | null;
+        approval: { valid: boolean; receipt: { contentHash: string; approvedBy: string; at: string } | null };
       }) => {
         setActive(d.case);
         setCommits(d.commits);
         setChain(d.chain);
         setGates(d.gates ?? []);
         setDraft(d.draft ?? "");
+        setApproval(d.approval ?? null);
         // blame per fact key
         const keys = Object.keys(d.case.facts);
         void Promise.all(
@@ -181,11 +185,54 @@ export default function CasePage() {
                   <span className={`rounded px-1.5 py-0.5 text-[10px] uppercase ${active.status === "approved" ? "bg-emerald-500/15 text-emerald-400" : "bg-zinc-800 text-zinc-400"}`}>{active.status}</span>
                   {chain && <span className={chain.ok ? "text-emerald-500" : "text-red-400"}>chain {chain.ok ? "✓ verified" : "✗ BROKEN"}</span>}
                   <span className="font-mono text-zinc-600">{active.caseId}</span>
+                  {approval?.valid && approval.receipt && (
+                    <a
+                      href={`/client/${active.caseId}`}
+                      target="_blank"
+                      className="rounded bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] text-emerald-400 hover:underline"
+                      title={approval.receipt.contentHash}
+                    >
+                      ✓ {approval.receipt.contentHash.slice(0, 12)} — client view →
+                    </a>
+                  )}
+                  {approval && !approval.valid && approval.receipt && (
+                    <span className="rounded bg-red-500/10 px-2 py-0.5 text-[10px] text-red-400">
+                      approval revoked by fact change
+                    </span>
+                  )}
                 </div>
               </div>
-              <button onClick={undo} className="flex items-center gap-1.5 rounded-lg border border-zinc-700 px-3 py-1.5 text-[12px] text-zinc-400 transition hover:border-[#c9854a]/50 hover:text-[#c9854a]">
-                <RotateCcw size={13} /> undo commit
-              </button>
+              <div className="flex items-center gap-2">
+                <input
+                  value={approver}
+                  onChange={(e) => setApprover(e.target.value)}
+                  className="w-28 rounded-lg border border-zinc-700 bg-transparent px-2 py-1.5 text-[12px] outline-none"
+                  placeholder="adviser id"
+                />
+                <button
+                  onClick={() => {
+                    if (!active) return;
+                    void fetch("/api/case", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ op: "approve", caseId: active.caseId, approver }),
+                    })
+                      .then(async (r) => ({ ok: r.ok, d: await r.json() }))
+                      .then(({ ok, d }) => {
+                        if (!ok && (d as { error?: string }).error === "red_gates") {
+                          alert("Red gates block approval — resolve or force via API with a reason.");
+                        }
+                        openCase(active.caseId);
+                      });
+                  }}
+                  className="rounded-lg border border-emerald-700 px-3 py-1.5 text-[12px] text-emerald-400 transition hover:bg-emerald-500/10"
+                >
+                  approve
+                </button>
+                <button onClick={undo} className="flex items-center gap-1.5 rounded-lg border border-zinc-700 px-3 py-1.5 text-[12px] text-zinc-400 transition hover:border-[#c9854a]/50 hover:text-[#c9854a]">
+                  <RotateCcw size={13} /> undo
+                </button>
+              </div>
             </div>
 
             <h2 className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-zinc-500">Facts</h2>
