@@ -1,0 +1,24 @@
+{
+  "schema": "fund_universe_v1",
+  "generatedAt": "2026-10-28",
+  "source": {
+    "doc": "AMFI NAVAll.txt",
+    "url": "https://portal.amfiindia.com/spages/NAVAll.txt",
+    "retrievedAt": "2026-10-28"
+  },
+  "selectionNotes": "Option A per user: 12 flagship direct-plan growth funds spanning liquid, short-duration, index, flexi, large&mid, small cap, ELSS, aggressive+conservative hybrid, BAF, corp bond, gold. Scheme codes resolved from live AMFI master, not hand-typed.",
+  "funds": [
+    { "schemeCode": "119800", "amfiName": "SBI LIQUID FUND", "amc": "SBI Mutual Fund", "category": "liquid", "personaUse": "emergency fund, retiree float", "nav": 4470.6516, "navDate": "27-Oct-2026" },
+    { "schemeCode": "119016", "amfiName": "HDFC Short Term Fund", "amc": "HDFC Mutual Fund", "category": "short_duration_debt", "personaUse": "parents' medical corpus, near-term needs", "nav": 35.267, "navDate": "27-Oct-2026" },
+    { "schemeCode": "120716", "amfiName": "UTI Nifty 50 Index Fund", "amc": "UTI Mutual Fund", "category": "index_equity", "personaUse": "low-cost core equity", "nav": 160.2276, "navDate": "27-Oct-2026" },
+    { "schemeCode": "122639", "amfiName": "Parag Parikh Flexi Cap Fund", "amc": "PPFAS Mutual Fund", "category": "flexi_cap", "personaUse": "core equity, global flavour", "nav": 89.2762, "navDate": "27-Oct-2026" },
+    { "schemeCode": "118834", "amfiName": "Mirae Asset Large & Midcap Fund", "amc": "Mirae Asset Mutual Fund", "category": "large_mid_cap", "personaUse": "growth core for 30s", "nav": 165.735, "navDate": "27-Oct-2026" },
+    { "schemeCode": "118778", "amfiName": "Nippon India Small Cap Fund", "amc": "Nippon India Mutual Fund", "category": "small_cap", "personaUse": "aggressive satellite only", "nav": 193.8273, "navDate": "27-Oct-2026" },
+    { "schemeCode": "135781", "amfiName": "Mirae Asset ELSS Tax Saver Fund", "amc": "Mirae Asset Mutual Fund", "category": "elss", "personaUse": "tax saving + equity (3y lock)", "nav": 53.616, "navDate": "27-Oct-2026" },
+    { "schemeCode": "119609", "amfiName": "SBI AGGRESSIVE HYBRID FUND", "amc": "SBI Mutual Fund", "category": "aggressive_hybrid", "personaUse": "balanced growth, moderate risk", "nav": 336.0053, "navDate": "27-Oct-2026" },
+    { "schemeCode": "119118", "amfiName": "HDFC Conservative Hybrid Fund", "amc": "HDFC Mutual Fund", "category": "conservative_hybrid", "personaUse": "parents' corpus, low-risk growth", "nav": 88.1399, "navDate": "27-Oct-2026" },
+    { "schemeCode": "120377", "amfiName": "ICICI Prudential Balanced Advantage Fund", "amc": "ICICI Prudential Mutual Fund", "category": "dynamic_asset_allocation", "personaUse": "child education goal (8-10y)", "nav": 84.98, "navDate": "27-Oct-2026" },
+    { "schemeCode": "120692", "amfiName": "ICICI Prudential Corporate Bond Fund", "amc": "ICICI Prudential Mutual Fund", "category": "corporate_bond", "personaUse": "retiree income, debt laddering", "nav": 33.3001, "navDate": "27-Oct-2026" },
+    { "schemeCode": "119788", "amfiName": "SBI GOLD FUND", "amc": "SBI Mutual Fund", "category": "gold_fof", "personaUse": "diversifier sleeve", "nav": 42.6546, "navDate": "27-Oct-2026" }
+  ]
+}

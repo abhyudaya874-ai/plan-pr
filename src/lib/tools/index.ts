@@ -1,6 +1,7 @@
 import { calcTool } from "./calc";
 import { makeWebTools } from "./web";
 import { makeFileTools } from "./files";
+import { vaultTool } from "./vault";
 import { TavilyClient } from "./tavily";
 import { unavailableTool, type Tool } from "./registry";
 
@@ -21,21 +22,7 @@ export function allTools(): Tool[] {
     calcTool,
     ...makeWebTools({ tavily }),
     ...makeFileTools(),
-    unavailableTool(
-      "vault_lookup",
-      "60",
-      "Look up a verified fund field (NAV, TER, load, AUM, manager tenure, category, benchmark).",
-      jsonObj(
-        {
-          amc: { type: "string" },
-          scheme: { type: "string" },
-          plan: { type: "string" },
-          option: { type: "string" },
-          field: { type: "string" },
-        },
-        ["amc", "scheme", "plan", "option", "field"],
-      ),
-    ),
+    vaultTool(),
   ];
 }
 

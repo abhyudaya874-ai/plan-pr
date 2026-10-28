@@ -1,0 +1,140 @@
+{
+  "schema": "persona_pack_v1",
+  "label": "SYNTHETIC — demo data only, no real persons",
+  "personas": [
+    {
+      "id": "bengaluru-grad-23",
+      "nameSet": "Bengali",
+      "label": "Bengaluru graduate, 23",
+      "age": 23,
+      "city": "Bengaluru",
+      "employment": "salaried",
+      "incomeMonthly": 65000,
+      "incomeStable": true,
+      "dependents": 0,
+      "liabilities": [],
+      "emergencyBufferMonths": 1.5,
+      "existingFunds": [],
+      "riskWords": "excited, wants growth, young so can take risk",
+      "statedRiskTolerance": "high",
+      "goals": [
+        { "id": "g-emerg", "label": "emergency fund", "amount": 200000, "horizonMonths": 12, "priority": "essential" },
+        { "id": "g-wealth", "label": "long-term wealth + tax saving", "amount": null, "horizonMonths": 120, "priority": "growth" }
+      ],
+      "hardConstraints": ["no dependents yet", "thin emergency buffer"],
+      "riskScoreHint": { "capacity": "high_horizon_low_buffer", "tolerance": "high" }
+    },
+    {
+      "id": "pune-couple-31",
+      "nameSet": "Puneri",
+      "label": "Pune couple, 31 — child education",
+      "age": 31,
+      "city": "Pune",
+      "employment": "salaried_dual",
+      "incomeMonthly": 175000,
+      "incomeStable": true,
+      "dependents": 1,
+      "liabilities": [{ "type": "home_loan", "emi": 32000 }],
+      "emergencyBufferMonths": 4,
+      "existingFunds": ["large cap index", "PPF"],
+      "riskWords": "careful but growth-oriented for the child goal",
+      "statedRiskTolerance": "moderate",
+      "goals": [
+        { "id": "g-edu", "label": "child higher education", "amount": 4000000, "horizonMonths": 156, "priority": "essential" },
+        { "id": "g-emerg", "label": "top-up emergency fund", "amount": 300000, "horizonMonths": 18, "priority": "essential" }
+      ],
+      "hardConstraints": ["home loan EMI", "1 dependent child"],
+      "riskScoreHint": { "capacity": "medium", "tolerance": "moderate" }
+    },
+    {
+      "id": "surat-owner-44",
+      "nameSet": "Gujarati",
+      "label": "Surat business owner, 44 — irregular income, retire at 58",
+      "age": 44,
+      "city": "Surat",
+      "employment": "business",
+      "incomeMonthly": 150000,
+      "incomeStable": false,
+      "dependents": 3,
+      "liabilities": [{ "type": "business_working_capital", "emi": 0 }],
+      "emergencyBufferMonths": 3,
+      "existingFunds": ["FD", "gold", "one ULIP (wants to exit)"],
+      "riskWords": "comfortable with business risk, wants retirement sorted",
+      "statedRiskTolerance": "moderate_high",
+      "goals": [
+        { "id": "g-retire", "label": "retirement corpus at 58", "amount": 30000000, "horizonMonths": 168, "priority": "essential" },
+        { "id": "g-buffer", "label": "12-month income buffer (irregular income)", "amount": 1800000, "horizonMonths": 24, "priority": "essential" }
+      ],
+      "hardConstraints": ["irregular income → high liquidity need", "ULIP exit pending"],
+      "riskScoreHint": { "capacity": "medium_liquidity_sensitive", "tolerance": "moderate_high" }
+    },
+    {
+      "id": "patna-doctor-38",
+      "nameSet": "Bihari",
+      "label": "Patna doctor, 38 — risk-averse, parents' medical corpus",
+      "age": 38,
+      "city": "Patna",
+      "employment": "salaried_practice",
+      "incomeMonthly": 220000,
+      "incomeStable": true,
+      "dependents": 2,
+      "liabilities": [],
+      "emergencyBufferMonths": 6,
+      "existingFunds": ["FD-heavy", "PPF", "some debt funds"],
+      "riskWords": "very risk averse, safety first",
+      "statedRiskTolerance": "low",
+      "goals": [
+        { "id": "g-parents", "label": "parents' medical corpus (unpredictable timing)", "amount": 2500000, "horizonMonths": 36, "priority": "essential_protected" },
+        { "id": "g-own", "label": "own retirement (started late)", "amount": 40000000, "horizonMonths": 240, "priority": "important" }
+      ],
+      "hardConstraints": ["medical corpus must stay safe + liquid-ish", "low tolerance is real"],
+      "riskScoreHint": { "capacity": "medium_high_income", "tolerance": "low" }
+    },
+    {
+      "id": "chennai-retiree-68",
+      "nameSet": "Tamil",
+      "label": "Chennai retiree, 68 — ₹80L pension corpus, 25y income need",
+      "age": 68,
+      "city": "Chennai",
+      "employment": "retired",
+      "incomeMonthly": 0,
+      "incomeStable": true,
+      "corpus": 8000000,
+      "dependents": 1,
+      "liabilities": [],
+      "emergencyBufferMonths": 0,
+      "existingFunds": ["SCSS", "FDs", "small POMIS"],
+      "riskWords": "wants safety + income, some inflation worry",
+      "statedRiskTolerance": "low_moderate",
+      "goals": [
+        { "id": "g-income", "label": "monthly income for 25 years", "amount": 35000, "horizonMonths": 300, "priority": "essential", "type": "income_stream" },
+        { "id": "g-health", "label": "health contingency", "amount": 1500000, "horizonMonths": 0, "priority": "essential_protected" }
+      ],
+      "hardConstraints": ["25-year horizon = inflation matters", "cannot replenish losses"],
+      "riskScoreHint": { "capacity": "low_medium", "tolerance": "low_moderate" }
+    },
+    {
+      "id": "mumbai-trader-29",
+      "nameSet": "Mumbai",
+      "label": "Mumbai F&O trader, 29 — wants 'high returns fast'",
+      "age": 29,
+      "city": "Mumbai",
+      "employment": "salaried",
+      "incomeMonthly": 140000,
+      "incomeStable": true,
+      "dependents": 0,
+      "liabilities": [],
+      "emergencyBufferMonths": 2,
+      "existingFunds": ["small-cap (recent)", "crypto"],
+      "riskWords": "aggressive, 'high returns fast', chased F&O losses before",
+      "statedRiskTolerance": "very_high_stated",
+      "behavioralFlags": ["loss_chasing_history", "wants_quick_returns"],
+      "goals": [
+        { "id": "g-wealth", "label": "wealth accumulation", "amount": null, "horizonMonths": 120, "priority": "growth" },
+        { "id": "g-trade", "label": "F&O capital (separate)", "amount": 500000, "horizonMonths": 6, "priority": "non_essential" }
+      ],
+      "hardConstraints": ["escalate: behavioural risk flags + thin buffer", "protect essential goals from trade capital"],
+      "riskScoreHint": { "capacity": "medium", "tolerance": "stated_high_but_flagged" }
+    }
+  ]
+}

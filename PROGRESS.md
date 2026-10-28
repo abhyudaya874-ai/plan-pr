@@ -19,7 +19,7 @@ secrets in repo/logs/client; I7 `pnpm repro` reproduces every reported number.
 | prompt-evals | done | `pnpm prompt:eval` 13 models x 21 cases; defaults -> chat/reason=openrouter:google/gemma-3-12b-it (95%, ~950ms), research=groq:qwen/qwen3.8-27b, check=openrouter:google/gemma-4-31b-it; csv -> workspace/_system/prompt-eval.csv | eval-chosen defaults now seed router ordering |
 | 30 research+citations | partial | `pnpm test` 39/39; `pnpm build` ok; fetch_url live w/o tavily (example.com fetched, source registered); SSRF blocked http://169.254.169.254; injection pre-screen tested | web_search live calls UNVERIFIED - no TAVILY_API_KEY (honest "unavailable"); sources.csv/trace.txt land in /40 |
 | 40 workbench files | done | `pnpm test` 47/47 (path guard, symlink, unicode, snapshot/undo); live: export_csv -> file_change event + real file + snapshot + trace.txt/telemetry.jsonl auto-saved; `/api/workspace` list/read/undo | unit + live verified |
-| 50 ui shell | pending | | Layer A complete at end |
+| 50 ui shell | done | `pnpm build` ok; rail + chat/research toggle + model picker + workbench w/ diff + mobile sheet; cited-only source chips, steps timeline, bridge card; history survives refresh | Layer A complete; user visual check via browser preview |
 | 60 case repo+vault | pending | | ASK: fund universe |
 | 70 planner+gates | pending | | |
 | 80 pr review+approval | pending | | |
@@ -27,7 +27,7 @@ secrets in repo/logs/client; I7 `pnpm repro` reproduces every reported number.
 | 95 eval+submission | pending | | |
 
 ## Current state
-Layer A complete: phases 00,10,20,30(partial),40,50 + prompt-evals done. Next: /60-case-repo-and-vault — STOP: needs the fund-universe answer from the user.
+Layer A + phase 60 (partial: factsheet fields unavailable) done. Next: /70-planner-and-gates.
 
 ## Blockers
 - **TAVILY_API_KEY missing** → web_search returns "unavailable" (honest); fetch_url still works via guarded direct fetch. Drop the key into .env to enable live search.

@@ -1,0 +1,213 @@
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
+import { GitCommitHorizontal, RotateCcw } from "lucide-react";
+
+interface Persona {
+  id: string;
+  label: string;
+  age: number;
+  city: string;
+  incomeMonthly: number;
+  goals: { id: string; label: string; amount: number | null; horizonMonths: number; priority: string }[];
+  statedRiskTolerance: string;
+  [k: string]: unknown;
+}
+interface CaseInfo {
+  caseId: string;
+  name: string;
+  status: string;
+  personaId: string;
+  facts: Record<string, { value: unknown; source?: string }>;
+}
+interface CommitInfo {
+  seq: number;
+  kind: string;
+  at: string;
+  hash: string;
+  changes: { key: string; after: unknown }[];
+}
+interface BlameInfo {
+  found: boolean;
+  key: string;
+  commitSeq: number;
+  commitHash: string;
+  at: string;
+}
+
+/** Persona -> seed facts (everything labelled synthetic/persona). */
+function seedFacts(p: Persona): Record<string, { value: unknown; source: string }> {
+  const f: Record<string, { value: unknown; source: string }> = {
+    "facts.age": { value: p.age, source: "persona" },
+    "facts.city": { value: p.city, source: "persona" },
+    "facts.income_monthly": { value: p.incomeMonthly, source: "persona" },
+    "facts.income_stable": { value: p.incomeStable, source: "persona" },
+    "facts.dependents": { value: p.dependents, source: "persona" },
+    "facts.emergency_buffer_months": { value: p.emergencyBufferMonths, source: "persona" },
+    "facts.stated_risk_tolerance": { value: p.statedRiskTolerance, source: "persona" },
+  };
+  p.goals.forEach((g, i) => {
+    f[`facts.goal_${i}.label`] = { value: g.label, source: "persona" };
+    if (g.amount != null) f[`facts.goal_${i}.amount`] = { value: g.amount, source: "persona" };
+    f[`facts.goal_${i}.horizon_months`] = { value: g.horizonMonths, source: "persona" };
+    f[`facts.goal_${i}.priority`] = { value: g.priority, source: "persona" };
+  });
+  return f;
+}
+
+export default function CasePage() {
+  const [personas, setPersonas] = useState<Persona[]>([]);
+  const [cases, setCases] = useState<CaseInfo[]>([]);
+  const [active, setActive] = useState<CaseInfo | null>(null);
+  const [commits, setCommits] = useState<CommitInfo[]>([]);
+  const [chain, setChain] = useState<{ ok: boolean } | null>(null);
+  const [blameInfo, setBlameInfo] = useState<Record<string, BlameInfo>>({});
+
+  const refresh = useCallback(() => {
+    void fetch("/api/case").then((r) => r.json()).then((d: { cases: CaseInfo[] }) => setCases(d.cases));
+  }, []);
+
+  useEffect(() => {
+    void fetch("/api/personas").then((r) => r.json()).then((d: { personas: Persona[] }) => setPersonas(d.personas));
+    refresh();
+  }, [refresh]);
+
+  const openCase = (caseId: string) => {
+    void fetch(`/api/case?caseId=${caseId}`).then((r) => r.json()).then(
+      (d: { case: CaseInfo; commits: CommitInfo[]; chain: { ok: boolean } }) => {
+        setActive(d.case);
+        setCommits(d.commits);
+        setChain(d.chain);
+        // blame per fact key
+        const keys = Object.keys(d.case.facts);
+        void Promise.all(
+          keys.map((k) =>
+            fetch(`/api/blame?caseId=${caseId}&key=${encodeURIComponent(k)}`)
+              .then((r) => r.json())
+              .then((b) => [k, b] as const),
+          ),
+        ).then((pairs) => setBlameInfo(Object.fromEntries(pairs)));
+      },
+    );
+  };
+
+  const create = (p: Persona) => {
+    void fetch("/api/case", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ op: "create", name: p.label, personaId: p.id, facts: seedFacts(p) }),
+    })
+      .then((r) => r.json())
+      .then((d: { case: CaseInfo }) => {
+        refresh();
+        openCase(d.case.caseId);
+      });
+  };
+
+  const undo = () => {
+    if (!active) return;
+    void fetch("/api/case", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ op: "undo", caseId: active.caseId }),
+    }).then(() => openCase(active.caseId));
+  };
+
+  return (
+    <div className="flex h-dvh bg-[#0a0a0b] text-zinc-200">
+      <div className="flex w-64 flex-col border-r border-zinc-800 bg-[#0d0d0f]">
+        <div className="flex items-center justify-between px-4 py-4">
+          <Link href="/" className="font-serif text-[20px] italic text-zinc-100">Pramaan</Link>
+          <Link href="/" className="text-[11px] text-zinc-500 hover:text-zinc-300">← chat</Link>
+        </div>
+        <div className="px-4 pb-2 text-[10px] font-semibold uppercase tracking-widest text-zinc-600">New case</div>
+        <div className="max-h-[40vh] space-y-1 overflow-y-auto px-3">
+          {personas.map((p) => (
+            <button
+              key={p.id}
+              onClick={() => create(p)}
+              className="w-full rounded-lg border border-zinc-800 px-2.5 py-2 text-left text-[12px] text-zinc-400 transition hover:border-[#c9854a]/40 hover:text-zinc-200"
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+        <div className="mt-3 px-4 pb-2 text-[10px] font-semibold uppercase tracking-widest text-zinc-600">Cases</div>
+        <div className="flex-1 space-y-1 overflow-y-auto px-3 pb-4">
+          {cases.map((c) => (
+            <button
+              key={c.caseId}
+              onClick={() => openCase(c.caseId)}
+              className={`w-full rounded-lg px-2.5 py-2 text-left text-[12px] transition ${active?.caseId === c.caseId ? "bg-zinc-800 text-zinc-100" : "text-zinc-400 hover:bg-zinc-800/50"}`}
+            >
+              <div className="truncate">{c.name}</div>
+              <div className="mt-0.5 text-[10px] uppercase tracking-wide text-zinc-600">{c.status}</div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <main className="min-w-0 flex-1 overflow-y-auto p-6">
+        {!active ? (
+          <div className="flex h-full items-center justify-center text-[14px] text-zinc-600">
+            Pick a persona to create a case — every fact becomes a commit.
+          </div>
+        ) : (
+          <div className="mx-auto max-w-3xl">
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <h1 className="text-[20px] font-semibold text-zinc-100">{active.name}</h1>
+                <div className="mt-1 flex items-center gap-2 text-[12px] text-zinc-500">
+                  <span className={`rounded px-1.5 py-0.5 text-[10px] uppercase ${active.status === "approved" ? "bg-emerald-500/15 text-emerald-400" : "bg-zinc-800 text-zinc-400"}`}>{active.status}</span>
+                  {chain && <span className={chain.ok ? "text-emerald-500" : "text-red-400"}>chain {chain.ok ? "✓ verified" : "✗ BROKEN"}</span>}
+                  <span className="font-mono text-zinc-600">{active.caseId}</span>
+                </div>
+              </div>
+              <button onClick={undo} className="flex items-center gap-1.5 rounded-lg border border-zinc-700 px-3 py-1.5 text-[12px] text-zinc-400 transition hover:border-[#c9854a]/50 hover:text-[#c9854a]">
+                <RotateCcw size={13} /> undo commit
+              </button>
+            </div>
+
+            <h2 className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-zinc-500">Facts</h2>
+            <div className="overflow-hidden rounded-xl border border-zinc-800">
+              {Object.entries(active.facts).map(([k, v]) => (
+                <div key={k} className="flex items-center gap-3 border-b border-zinc-800/60 px-3 py-1.5 font-mono text-[12px] last:border-0">
+                  <span className="w-64 shrink-0 truncate text-zinc-500">{k}</span>
+                  <span className="flex-1 text-zinc-200">{String(v.value)}</span>
+                  {blameInfo[k]?.found && (
+                    <span className="shrink-0 text-[10px] text-zinc-600" title={blameInfo[k]!.commitHash}>
+                      c{blameInfo[k]!.commitSeq} · {String(v.source ?? "")}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <h2 className="mb-2 mt-6 text-[11px] font-semibold uppercase tracking-widest text-zinc-500">Commits</h2>
+            <div className="space-y-1">
+              {[...commits].reverse().map((c) => (
+                <div key={c.seq} className="flex items-start gap-3 rounded-lg border border-zinc-800/70 px-3 py-2">
+                  <GitCommitHorizontal size={14} className="mt-0.5 text-[#c9854a]" />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 text-[12px]">
+                      <span className="font-mono text-zinc-300">#{c.seq}</span>
+                      <span className="text-zinc-500">{c.kind}</span>
+                      <span className="font-mono text-[10px] text-zinc-600">{c.hash}</span>
+                      <span className="ml-auto text-[10px] text-zinc-600">{new Date(c.at).toLocaleTimeString()}</span>
+                    </div>
+                    {c.changes.length > 0 && (
+                      <div className="mt-1 truncate text-[11px] text-zinc-600">
+                        {c.changes.map((ch) => `${ch.key}→${JSON.stringify(ch.after)}`).join(", ")}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}

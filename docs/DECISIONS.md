@@ -97,3 +97,29 @@
 - **Direct fetch guard**: https only, no IP-literal/private hosts, DNS resolve
   then re-check every address, redirects manually followed max 3 with the same
   checks per hop, 6k char cap, 10s timeout.
+
+## 2026-10-28 — Phase 60 fund universe (user decision: option A)
+
+- **12 direct-plan growth funds** picked to cover categories + persona needs,
+  flagship large-AUM funds from AMCs with parseable factsheets:
+  SBI Liquid (liquid/emergency), HDFC Short Term Debt (short-duration),
+  UTI Nifty 50 Index (index), Parag Parikh Flexi Cap (flexi),
+  Mirae Asset Large & Midcap (large&mid), Nippon India Small Cap (small cap),
+  Mirae Asset ELSS Tax Saver (ELSS), SBI Equity Hybrid (aggressive hybrid),
+  HDFC Hybrid Debt (conservative hybrid), ICICI Pru Balanced Advantage
+  (dynamic asset allocation / child education), ICICI Pru Corporate Bond
+  (retiree income debt), SBI Gold (gold FoF).
+- Scheme codes resolved from the live AMFI NAV master (NAVAll.txt), never
+  hand-typed. If the organiser supplies a fund list later, we extend this set.
+- Persona mapping: emergency->liquid, parents' medical->short duration/cons
+  hybrid, retiree income->corp bond+liquid, child education->BAF/flexi/index,
+  grad->ELSS+index, trader->small cap (gated).
+- **Factsheet sourcing failed 3 attempts** (AMC index pages bot-guarded/JS,
+  PPFAS/HDFC/SBI/Nippon direct URLs 403/404, Groww API dead, AMFI TER
+  endpoints moved). Changed approach per protocol: vault ships with
+  AMFI-sourced fields REAL (nav, nav_date, scheme_code, names, plan, option,
+  amc) and factsheet fields (TER, load, AUM, benchmark, manager, returns,
+  riskometer, inception, min SIP) as explicit `unavailable` — never guessed.
+  `pnpm vault:build` already implements factsheet-text ingestion: drop
+  extracted factsheet text into data/sources/factsheets/<amc>.txt and the
+  fields populate with {doc,quote} blame automatically.

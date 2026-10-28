@@ -1,0 +1,170 @@
+{
+  "schema": "vault_fund_v1",
+  "schemeCode": "119609",
+  "identity": {
+    "amc": "SBI Mutual Fund",
+    "scheme": "SBI AGGRESSIVE HYBRID FUND",
+    "plan": "Direct Plan",
+    "option": "Growth",
+    "amfiName": "SBI AGGRESSIVE HYBRID FUND",
+    "matchedBy": "amfi_navall",
+    "matchedAt": "2026-10-28"
+  },
+  "category": "aggressive_hybrid",
+  "fields": {
+    "scheme_code": {
+      "status": "ok",
+      "value": "119609",
+      "source": {
+        "doc": "AMFI NAVAll.txt",
+        "url": "https://portal.amfiindia.com/spages/NAVAll.txt",
+        "retrievedAt": "2026-10-28"
+      }
+    },
+    "amc": {
+      "status": "ok",
+      "value": "SBI Mutual Fund",
+      "source": {
+        "doc": "AMFI NAVAll.txt",
+        "url": "https://portal.amfiindia.com/spages/NAVAll.txt",
+        "retrievedAt": "2026-10-28"
+      }
+    },
+    "scheme_name": {
+      "status": "ok",
+      "value": "SBI AGGRESSIVE HYBRID FUND",
+      "source": {
+        "doc": "AMFI NAVAll.txt",
+        "url": "https://portal.amfiindia.com/spages/NAVAll.txt",
+        "retrievedAt": "2026-10-28"
+      }
+    },
+    "plan": {
+      "status": "ok",
+      "value": "Direct Plan",
+      "source": {
+        "doc": "AMFI NAVAll.txt",
+        "url": "https://portal.amfiindia.com/spages/NAVAll.txt",
+        "retrievedAt": "2026-10-28"
+      }
+    },
+    "option": {
+      "status": "ok",
+      "value": "Growth",
+      "source": {
+        "doc": "AMFI NAVAll.txt",
+        "url": "https://portal.amfiindia.com/spages/NAVAll.txt",
+        "retrievedAt": "2026-10-28"
+      }
+    },
+    "category": {
+      "status": "ok",
+      "value": "aggressive_hybrid",
+      "source": {
+        "doc": "AMFI NAVAll.txt",
+        "url": "https://portal.amfiindia.com/spages/NAVAll.txt",
+        "retrievedAt": "2026-10-28"
+      }
+    },
+    "nav": {
+      "status": "ok",
+      "value": 336.0053,
+      "unit": "INR",
+      "source": {
+        "doc": "AMFI NAVAll.txt",
+        "url": "https://portal.amfiindia.com/spages/NAVAll.txt",
+        "retrievedAt": "2026-10-28"
+      }
+    },
+    "nav_date": {
+      "status": "ok",
+      "value": "27-Oct-2026",
+      "source": {
+        "doc": "AMFI NAVAll.txt",
+        "url": "https://portal.amfiindia.com/spages/NAVAll.txt",
+        "retrievedAt": "2026-10-28"
+      }
+    },
+    "persona_use": {
+      "status": "ok",
+      "value": "balanced growth, moderate risk",
+      "source": {
+        "doc": "AMFI NAVAll.txt",
+        "url": "https://portal.amfiindia.com/spages/NAVAll.txt",
+        "retrievedAt": "2026-10-28"
+      }
+    },
+    "expense_ratio_direct": {
+      "status": "unavailable",
+      "reason": "factsheet not yet ingested (drop text in data/sources/factsheets/)"
+    },
+    "expense_ratio_regular": {
+      "status": "unavailable",
+      "reason": "factsheet not yet ingested (drop text in data/sources/factsheets/)"
+    },
+    "exit_load": {
+      "status": "unavailable",
+      "reason": "factsheet not yet ingested (drop text in data/sources/factsheets/)"
+    },
+    "aum": {
+      "status": "unavailable",
+      "reason": "factsheet not yet ingested (drop text in data/sources/factsheets/)"
+    },
+    "benchmark": {
+      "status": "unavailable",
+      "reason": "factsheet not yet ingested (drop text in data/sources/factsheets/)"
+    },
+    "fund_manager": {
+      "status": "unavailable",
+      "reason": "factsheet not yet ingested (drop text in data/sources/factsheets/)"
+    },
+    "manager_since": {
+      "status": "unavailable",
+      "reason": "factsheet not yet ingested (drop text in data/sources/factsheets/)"
+    },
+    "returns_1y": {
+      "status": "unavailable",
+      "reason": "factsheet not yet ingested (drop text in data/sources/factsheets/)"
+    },
+    "returns_3y": {
+      "status": "unavailable",
+      "reason": "factsheet not yet ingested (drop text in data/sources/factsheets/)"
+    },
+    "returns_5y": {
+      "status": "unavailable",
+      "reason": "factsheet not yet ingested (drop text in data/sources/factsheets/)"
+    },
+    "returns_si": {
+      "status": "unavailable",
+      "reason": "factsheet not yet ingested (drop text in data/sources/factsheets/)"
+    },
+    "riskometer": {
+      "status": "unavailable",
+      "reason": "factsheet not yet ingested (drop text in data/sources/factsheets/)"
+    },
+    "inception_date": {
+      "status": "unavailable",
+      "reason": "factsheet not yet ingested (drop text in data/sources/factsheets/)"
+    },
+    "min_sip": {
+      "status": "unavailable",
+      "reason": "factsheet not yet ingested (drop text in data/sources/factsheets/)"
+    },
+    "min_lumpsum": {
+      "status": "unavailable",
+      "reason": "factsheet not yet ingested (drop text in data/sources/factsheets/)"
+    },
+    "sid_url": {
+      "status": "unavailable",
+      "reason": "pending"
+    },
+    "factsheet_url": {
+      "status": "unavailable",
+      "reason": "pending"
+    }
+  },
+  "freshness": {
+    "builtAt": "2026-10-28T06:16:30.725Z",
+    "note": "AMFI navall + factsheet text if present"
+  }
+}
