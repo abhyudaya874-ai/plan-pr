@@ -473,6 +473,9 @@ export async function runLoop(
   // Citation post-processing: strip invented [n] markers (invariant I2).
   const scrub = scrubCitations(result.answer, sourceRegistry);
   result.answer = scrub.text;
+  // The persisted "[files changed:]" worklog is code-appended, not model
+  // output — models parrot it into fake confirmations; strip it here.
+  result.answer = result.answer.replace(/\n?\[files changed: [^\]]*\]/g, "");
   result.cited = scrub.cited;
   result.citationDefects = scrub.defects;
   result.sources = sourceRegistry.all();
