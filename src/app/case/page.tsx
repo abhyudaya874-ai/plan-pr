@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { GitCommitHorizontal, RotateCcw } from "lucide-react";
+import { Resizer, useResizable } from "@/components/Resizer";
 
 interface Persona {
   id: string;
@@ -76,6 +77,20 @@ export default function CasePage() {
   const [draft, setDraft] = useState("");
   const [approval, setApproval] = useState<{ valid: boolean; receipt: { contentHash: string; approvedBy: string; at: string } | null } | null>(null);
   const [approver, setApprover] = useState("adviser-1");
+  const side = useResizable({
+    axis: "x",
+    initial: 256,
+    min: 200,
+    max: 460,
+    storageKey: "pramaan:case-rail",
+  });
+  const personasH = useResizable({
+    axis: "y",
+    initial: 240,
+    min: 80,
+    max: () => window.innerHeight * 0.6,
+    storageKey: "pramaan:case-personas-h",
+  });
 
   const refresh = useCallback(() => {
     void fetch("/api/case").then((r) => r.json()).then((d: { cases: CaseInfo[] }) => setCases(d.cases));
@@ -139,13 +154,13 @@ export default function CasePage() {
 
   return (
     <div className="flex h-dvh bg-[#0a0a0b] text-zinc-200">
-      <div className="flex w-64 flex-col border-r border-zinc-800 bg-[#0d0d0f]">
+      <div className="flex shrink-0 flex-col bg-[#0d0d0f]" style={{ width: side.size }}>
         <div className="flex items-center justify-between px-4 py-4">
           <Link href="/" className="font-serif text-[20px] italic text-zinc-100">Pramaan</Link>
           <Link href="/" className="text-[11px] text-zinc-500 hover:text-zinc-300">← chat</Link>
         </div>
         <div className="px-4 pb-2 text-[10px] font-semibold uppercase tracking-widest text-zinc-600">New case</div>
-        <div className="max-h-[40vh] space-y-1 overflow-y-auto px-3">
+        <div className="space-y-1 overflow-y-auto px-3" style={{ maxHeight: personasH.size }}>
           {personas.map((p) => (
             <button
               key={p.id}
@@ -156,7 +171,13 @@ export default function CasePage() {
             </button>
           ))}
         </div>
-        <div className="mt-3 px-4 pb-2 text-[10px] font-semibold uppercase tracking-widest text-zinc-600">Cases</div>
+        <Resizer
+          orientation="horizontal"
+          onPointerDown={personasH.onPointerDown}
+          onDoubleClick={personasH.reset}
+          className="mt-2"
+        />
+        <div className="mt-1 px-4 pb-2 text-[10px] font-semibold uppercase tracking-widest text-zinc-600">Cases</div>
         <div className="flex-1 space-y-1 overflow-y-auto px-3 pb-4">
           {cases.map((c) => (
             <button
@@ -170,6 +191,11 @@ export default function CasePage() {
           ))}
         </div>
       </div>
+      <Resizer
+        orientation="vertical"
+        onPointerDown={side.onPointerDown}
+        onDoubleClick={side.reset}
+      />
 
       <main className="min-w-0 flex-1 overflow-y-auto p-6">
         {!active ? (

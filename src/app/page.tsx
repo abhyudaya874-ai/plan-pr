@@ -1,13 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Menu, PanelRight, Send, Square, Trash2 } from "lucide-react";
+import { PanelLeft, PanelRight, Send, Square, Trash2 } from "lucide-react";
 import { useChatStream } from "@/components/chat/useChatStream";
 import { Markdown } from "@/components/chat/Markdown";
 import { SourceChips } from "@/components/chat/SourceChips";
 import { StepsTimeline } from "@/components/chat/StepsTimeline";
 import { ModelPicker } from "@/components/chat/ModelPicker";
 import { Workbench } from "@/components/workbench/Workbench";
+import { Resizer, useResizable } from "@/components/Resizer";
 
 const LS_SESSION = "pramaan:session";
 const LS_MODEL = "pramaan:model";
@@ -18,7 +19,24 @@ export default function Page() {
   const [mode, setMode] = useState<"chat" | "research">("chat");
   const [modelKey, setModelKey] = useState("");
   const [railOpen, setRailOpen] = useState(false);
+  const [railCollapsed, setRailCollapsed] = useState(false);
   const [benchOpen, setBenchOpen] = useState(true);
+  const [benchFull, setBenchFull] = useState(false);
+  const rail = useResizable({
+    axis: "x",
+    initial: 240,
+    min: 180,
+    max: 420,
+    storageKey: "pramaan:rail-w",
+  });
+  const bench = useResizable({
+    axis: "x",
+    initial: 340,
+    min: 280,
+    max: () => Math.max(420, window.innerWidth - 360),
+    sign: -1,
+    storageKey: "pramaan:bench-w",
+  });
   const [history, setHistory] = useState<{ role: string; content: string; bridge: string | null }[]>([]);
   const { turns, busy, send, stop, clear, filesVersion } = useChatStream();
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -56,6 +74,7 @@ export default function Page() {
     const msg = input.trim();
     if (!msg || busy || !sessionId) return;
     setInput("");
+    if (inputRef.current) inputRef.current.style.height = "auto";
     setHistory([]);
     void send({ sessionId, message: msg, mode, modelKey: modelKey || undefined });
   };
@@ -75,7 +94,8 @@ export default function Page() {
     <div className="flex h-dvh bg-[#0a0a0b] text-zinc-200">
       {/* left rail */}
       <aside
-        className={`fixed inset-y-0 left-0 z-40 flex w-60 flex-col border-r border-zinc-800 bg-[#0d0d0f] transition-transform md:static md:translate-x-0 ${railOpen ? "translate-x-0" : "-translate-x-full"}`}
+        style={{ width: rail.size }}
+        className={`fixed inset-y-0 left-0 z-40 flex shrink-0 flex-col border-r border-zinc-800 bg-[#0d0d0f] transition-transform md:static md:translate-x-0 md:border-r-0 ${railOpen ? "translate-x-0" : "-translate-x-full"} ${railCollapsed ? "md:hidden" : ""}`}
       >
         <div className="flex items-center gap-2 px-4 py-4">
           <span className="font-serif text-[22px] italic text-zinc-100">Pramaan</span>
@@ -110,13 +130,29 @@ export default function Page() {
       {railOpen && (
         <div className="fixed inset-0 z-30 bg-black/60 md:hidden" onClick={() => setRailOpen(false)} />
       )}
+      {!railCollapsed && (
+        <Resizer
+          orientation="vertical"
+          onPointerDown={rail.onPointerDown}
+          onDoubleClick={rail.reset}
+          className="hidden md:block"
+        />
+      )}
 
       {/* center */}
-      <main className="flex min-w-0 flex-1 flex-col">
+      <main className={benchFull ? "hidden" : "flex min-w-0 flex-1 flex-col"}>
         {/* topbar */}
         <div className="flex items-center gap-2 border-b border-zinc-800 px-3 py-2">
-          <button onClick={() => setRailOpen(true)} className="rounded p-1.5 text-zinc-500 hover:bg-zinc-800 md:hidden">
-            <Menu size={16} />
+          <button
+            onClick={() =>
+              window.matchMedia("(min-width: 768px)").matches
+                ? setRailCollapsed((v) => !v)
+                : setRailOpen(true)
+            }
+            className="rounded p-1.5 text-zinc-500 transition hover:bg-zinc-800 hover:text-zinc-300"
+            title="toggle sidebar"
+          >
+            <PanelLeft size={16} />
           </button>
           <div className="flex rounded-full border border-zinc-800 p-0.5 text-[12px]">
             {(["chat", "research"] as const).map((m) => (
@@ -132,7 +168,11 @@ export default function Page() {
           <div className="ml-auto flex items-center gap-2">
             <ModelPicker value={modelKey} onChange={onModel} />
             <button
-              onClick={() => setBenchOpen(!benchOpen)}
+              onClick={() => {
+                const next = !benchOpen;
+                setBenchOpen(next);
+                if (!next) setBenchFull(false);
+              }}
               className={`hidden rounded p-1.5 transition md:block ${benchOpen ? "text-[#c9854a]" : "text-zinc-500 hover:text-zinc-300"}`}
             >
               <PanelRight size={16} />
@@ -181,7 +221,11 @@ export default function Page() {
             <textarea
               ref={inputRef}
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={(e) => {
+                setInput(e.target.value);
+                e.target.style.height = "auto";
+                e.target.style.height = `${Math.min(e.target.scrollHeight, 160)}px`;
+              }}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
@@ -211,17 +255,30 @@ export default function Page() {
       </main>
 
       {/* workbench */}
+      {benchOpen && !benchFull && (
+        <Resizer
+          orientation="vertical"
+          onPointerDown={bench.onPointerDown}
+          onDoubleClick={bench.reset}
+          className="hidden md:block"
+        />
+      )}
       {benchOpen && (
-        <aside className="hidden w-[340px] shrink-0 border-l border-zinc-800 bg-[#0d0d0f] md:block">
+        <aside
+          style={benchFull ? undefined : { width: bench.size }}
+          className={`hidden bg-[#0d0d0f] md:block ${benchFull ? "min-w-0 flex-1 border-l border-zinc-800" : "shrink-0"}`}
+        >
           <Workbench
             sessionId={sessionId}
             filesVersion={filesVersion}
             changedThisTurn={changedThisTurn}
+            maximized={benchFull}
+            onToggleMaximize={() => setBenchFull((v) => !v)}
           />
         </aside>
       )}
       {/* mobile workbench sheet */}
-      <div className="fixed inset-x-0 bottom-0 z-40 max-h-[45dvh] border-t border-zinc-800 bg-[#0d0d0f] md:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-40 bg-[#0d0d0f] md:hidden">
         <MobileBench sessionId={sessionId} filesVersion={filesVersion} changed={changedThisTurn} />
       </div>
     </div>
@@ -316,8 +373,24 @@ function MobileBench({
   changed: import("@/components/chat/useChatStream").FileChangeEv[];
 }) {
   const [open, setOpen] = useState(false);
+  const sheet = useResizable({
+    axis: "y",
+    initial: 340,
+    min: 140,
+    max: () => window.innerHeight * 0.85,
+    sign: -1,
+    storageKey: "pramaan:sheet-h",
+  });
   return (
     <div>
+      <Resizer
+        orientation="horizontal"
+        onPointerDown={(e) => {
+          setOpen(true);
+          sheet.onPointerDown(e);
+        }}
+        onDoubleClick={sheet.reset}
+      />
       <button
         onClick={() => setOpen(!open)}
         className="flex w-full items-center justify-between px-4 py-2 text-[12px] text-zinc-400"
@@ -326,7 +399,7 @@ function MobileBench({
         <span>{open ? "▾" : "▴"}</span>
       </button>
       {open && (
-        <div className="max-h-[38dvh] overflow-hidden">
+        <div style={{ height: sheet.size }} className="overflow-hidden">
           <Workbench sessionId={sessionId} filesVersion={filesVersion} changedThisTurn={changed} />
         </div>
       )}

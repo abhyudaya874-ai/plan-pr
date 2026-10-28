@@ -1,8 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { FileText, FilePlus, FilePen, FileX, RotateCcw, Save } from "lucide-react";
+import { FileText, FilePlus, FilePen, FileX, Maximize2, Minimize2, RotateCcw, Save } from "lucide-react";
 import type { FileChangeEv } from "@/components/chat/useChatStream";
+import { Resizer, useResizable } from "@/components/Resizer";
 
 interface FileInfo {
   path: string;
@@ -14,11 +15,22 @@ export function Workbench({
   sessionId,
   filesVersion,
   changedThisTurn,
+  maximized,
+  onToggleMaximize,
 }: {
   sessionId: string;
   filesVersion: number; // bump triggers re-list
   changedThisTurn: FileChangeEv[];
+  maximized?: boolean;
+  onToggleMaximize?: () => void;
 }) {
+  const listPane = useResizable({
+    axis: "x",
+    initial: 144,
+    min: 96,
+    max: 320,
+    storageKey: "pramaan:wb-files",
+  });
   const [files, setFiles] = useState<FileInfo[]>([]);
   const [active, setActive] = useState<string | null>(null);
   const [content, setContent] = useState<string>("");
@@ -91,12 +103,21 @@ export function Workbench({
           >
             <RotateCcw size={14} />
           </button>
+          {onToggleMaximize && (
+            <button
+              onClick={onToggleMaximize}
+              title={maximized ? "Restore panel" : "Maximize panel"}
+              className="rounded p-1 text-zinc-500 transition hover:bg-zinc-800 hover:text-zinc-200"
+            >
+              {maximized ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+            </button>
+          )}
         </div>
       </div>
 
       <div className="flex min-h-0 flex-1">
         {/* file list */}
-        <div className="w-36 shrink-0 overflow-y-auto border-r border-zinc-800 py-1">
+        <div className="shrink-0 overflow-y-auto py-1" style={{ width: listPane.size }}>
           {files.length === 0 && (
             <div className="px-3 py-4 text-[12px] text-zinc-600">
               Empty — files the agent writes appear here live.
@@ -130,6 +151,11 @@ export function Workbench({
             );
           })}
         </div>
+        <Resizer
+          orientation="vertical"
+          onPointerDown={listPane.onPointerDown}
+          onDoubleClick={listPane.reset}
+        />
 
         {/* viewer */}
         <div className="flex min-w-0 flex-1 flex-col">

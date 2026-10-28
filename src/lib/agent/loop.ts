@@ -226,7 +226,7 @@ export async function runLoop(
           break;
         case "error":
           failed = true;
-          emitStep("think", "Model error", "error", ev.error.message);
+          emitStep("model_switch", "Model error", "error", ev.error.message);
           sse.emit({ type: "error", code: ev.error.kind, message: userSafeError(ev.error.message) });
           break;
       }
@@ -375,6 +375,7 @@ export async function runLoop(
         }
 
         // File changes: unified diff per file, capped for the wire.
+        const filesOut: { path: string; op: string; added: number; deleted: number; diff: string }[] = [];
         const changes = (exec.data?.fileChanges ?? []) as FileChange[];
         for (const c of changes) {
           fileChanges.push(c);
@@ -391,6 +392,7 @@ export async function runLoop(
           stats.push(
             `${c.op} ${c.path}${add || del ? `  +${add} −${del}` : ""}  ${c.bytes}b`,
           );
+          filesOut.push({ path: c.path, op: c.op, added: add, deleted: del, diff: diff.slice(0, 6000) });
           sse.emit({
             type: "file_change",
             path: c.path,
@@ -412,6 +414,7 @@ export async function runLoop(
           ok: exec.ok,
           summary: summarize(exec.resultText),
           stats: stats.length ? stats : undefined,
+          files: filesOut.length ? filesOut : undefined,
         });
         emitStep(stepKind, stepLabel(call.name, parsedArgs), exec.ok ? "done" : "error", undefined, stepT);
       }),

@@ -32,6 +32,57 @@ function ThinkDetail({ text }: { text: string }) {
   );
 }
 
+/** Devin-style inline diff inside a tool-call card. */
+function MiniDiff({ f }: { f: { path: string; op: string; added: number; deleted: number; diff: string } }) {
+  const [expanded, setExpanded] = useState(false);
+  const lines = f.diff.split("\n").filter((l) => !l.startsWith("diff ") && !l.startsWith("index "));
+  const shown = expanded ? lines : lines.slice(0, 24);
+  const opColor =
+    f.op === "create" ? "text-emerald-400" : f.op === "delete" ? "text-red-400" : "text-amber-400";
+  return (
+    <div className="mt-1 overflow-hidden rounded border border-zinc-800 bg-black/60">
+      <div className="flex items-center justify-between border-b border-zinc-800 px-2 py-1">
+        <span className="font-mono text-[10.5px] text-zinc-400">{f.path}</span>
+        <span className="font-mono text-[10px]">
+          <span className={opColor}>{f.op}</span>
+          {(f.added || f.deleted) > 0 && (
+            <>
+              {" "}<span className="text-emerald-500">+{f.added}</span>
+              {" "}<span className="text-red-400">−{f.deleted}</span>
+            </>
+          )}
+        </span>
+      </div>
+      <pre className="overflow-x-auto px-2 py-1 font-mono text-[10.5px] leading-[1.45]">
+        {shown.map((l, i) => (
+          <div
+            key={i}
+            className={
+              l.startsWith("+")
+                ? "bg-emerald-500/10 text-emerald-300"
+                : l.startsWith("-")
+                  ? "bg-red-500/10 text-red-300"
+                  : l.startsWith("@@")
+                    ? "text-[#7aa2f7]"
+                    : "text-zinc-500"
+            }
+          >
+            {l || " "}
+          </div>
+        ))}
+      </pre>
+      {lines.length > 24 && (
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="w-full border-t border-zinc-800 py-0.5 text-[10px] text-zinc-500 hover:text-zinc-300"
+        >
+          {expanded ? "collapse ▴" : `show all ${lines.length} lines ▾`}
+        </button>
+      )}
+    </div>
+  );
+}
+
 /** Devin-style per-tool result stats: lines, diff counts, result values. */
 function StatLine({ s }: { s: string }) {
   // colourize +n −m in file-change stats
@@ -109,6 +160,7 @@ export function StepsTimeline({
                 )}
               </div>
               {t.stats?.map((s, j) => <StatLine key={j} s={s} />)}
+              {t.files?.map((f, j) => <MiniDiff key={j} f={f} />)}
             </div>
           ))}
         </div>

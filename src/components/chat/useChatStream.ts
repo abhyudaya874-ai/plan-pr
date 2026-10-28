@@ -57,6 +57,7 @@ export interface ToolCallItem {
   ok?: boolean;
   summary?: string;
   stats?: string[];
+  files?: { path: string; op: string; added: number; deleted: number; diff: string }[];
 }
 
 export interface Turn {
@@ -134,6 +135,7 @@ export function applyEvent(turn: Turn, ev: Ev): Turn {
           ok: Boolean(ev.ok),
           summary: String(ev.summary ?? ""),
           stats: (ev.stats as string[] | undefined) ?? undefined,
+          files: (ev.files as ToolCallItem["files"]) ?? undefined,
         };
       }
       return { ...turn, toolCalls };
