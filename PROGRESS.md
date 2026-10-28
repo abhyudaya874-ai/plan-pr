@@ -13,8 +13,8 @@ secrets in repo/logs/client; I7 `pnpm repro` reproduces every reported number.
 ## Phase table
 | phase | status | verify evidence (real command output) | notes |
 |---|---|---|---|
-| 00 bootstrap | in progress | pending | scaffold + env + structure |
-| 10 model gateway | pending | | |
+| 00 bootstrap | done | `pnpm typecheck` 0 err; `pnpm lint` 0 err; `pnpm test` 4/4 pass; `pnpm build` ok (ƒ /api/health); `curl :3001/api/health` -> `{"ok":true,"providers":{"openrouter":true,"groq":true,"nvidia":true,"tavily":false}}` | Next 16.4.3 + TS strict + nUIA; commit `chore: bootstrap project` |
+| 10 model gateway | done | `pnpm test` 19/19; `pnpm build` ok (ƒ /api/models); `pnpm models:probe` -> 13 verified (openrouter 7, groq 3, nvidia 3); `curl :3001/api/models` -> 13 models w/ ttft; `GROQ_API_KEY=bad tsx scripts/chat-smoke.ts` -> model_switch to nvidia, answer delivered | hedging fired naturally on cold provider; NIM free key has most functions unprovisioned (3 working found) |
 | 20 chat core | pending | | |
 | prompt-evals | pending | | |
 | 30 research+citations | pending | | blocked on TAVILY_API_KEY (not provided) |
@@ -27,7 +27,9 @@ secrets in repo/logs/client; I7 `pnpm repro` reproduces every reported number.
 | 95 eval+submission | pending | | |
 
 ## Current state
-Phase 00 in progress.
+Phases 00+10 done. Next: /20-chat-core.
+Dev server note: port 3000 is used by another app on this machine; ours runs
+on 3001 (`pnpm dev` picks a free port).
 
 ## Blockers
 - TAVILY_API_KEY not provided (needed at phase 30; degrades gracefully until then).

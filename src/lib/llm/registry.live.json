@@ -1,0 +1,665 @@
+{
+  "generatedAt": "2026-10-28T05:34:10.071Z",
+  "models": [
+    {
+      "key": "openrouter:google/gemma-3-4b-it",
+      "provider": "openrouter",
+      "modelId": "google/gemma-3-4b-it",
+      "label": "google/gemma-3-4b-it",
+      "tier": "fast",
+      "caps": {
+        "tools": false,
+        "json": true,
+        "vision": true,
+        "reasoning": false
+      },
+      "contextWindow": 131072,
+      "verified": true,
+      "probe": {
+        "ttftMs": 707,
+        "totalMs": 709,
+        "toolCallOk": false,
+        "jsonOk": true,
+        "at": "2026-10-28T05:25:04.251Z"
+      }
+    },
+    {
+      "key": "openrouter:google/gemma-3-12b-it",
+      "provider": "openrouter",
+      "modelId": "google/gemma-3-12b-it",
+      "label": "google/gemma-3-12b-it",
+      "tier": "fast",
+      "caps": {
+        "tools": false,
+        "json": true,
+        "vision": true,
+        "reasoning": false
+      },
+      "contextWindow": 131072,
+      "verified": true,
+      "probe": {
+        "ttftMs": 763,
+        "totalMs": 771,
+        "toolCallOk": false,
+        "jsonOk": true,
+        "at": "2026-10-28T05:25:19.831Z"
+      }
+    },
+    {
+      "key": "openrouter:google/gemma-3-27b-it",
+      "provider": "openrouter",
+      "modelId": "google/gemma-3-27b-it",
+      "label": "google/gemma-3-27b-it",
+      "tier": "fast",
+      "caps": {
+        "tools": true,
+        "json": true,
+        "vision": true,
+        "reasoning": false
+      },
+      "contextWindow": 131072,
+      "verified": true,
+      "probe": {
+        "ttftMs": 716,
+        "totalMs": 716,
+        "toolCallOk": true,
+        "jsonOk": true,
+        "at": "2026-10-28T05:25:34.749Z"
+      }
+    },
+    {
+      "key": "openrouter:google/gemma-4-31b-it",
+      "provider": "openrouter",
+      "modelId": "google/gemma-4-31b-it",
+      "label": "google/gemma-4-31b-it",
+      "tier": "balanced",
+      "caps": {
+        "tools": true,
+        "json": true,
+        "vision": true,
+        "reasoning": false
+      },
+      "contextWindow": 262144,
+      "verified": true,
+      "probe": {
+        "ttftMs": 879,
+        "totalMs": 977,
+        "toolCallOk": true,
+        "jsonOk": true,
+        "at": "2026-10-28T05:25:58.259Z"
+      }
+    },
+    {
+      "key": "openrouter:openai/gpt-chat-latest",
+      "provider": "openrouter",
+      "modelId": "openai/gpt-chat-latest",
+      "label": "openai/gpt-chat-latest",
+      "tier": "balanced",
+      "caps": {
+        "tools": true,
+        "json": true,
+        "vision": true,
+        "reasoning": false
+      },
+      "contextWindow": 400000,
+      "verified": true,
+      "probe": {
+        "ttftMs": 1644,
+        "totalMs": 1840,
+        "toolCallOk": true,
+        "jsonOk": true,
+        "at": "2026-10-28T05:26:13.245Z"
+      }
+    },
+    {
+      "key": "openrouter:deepseek/deepseek-chat",
+      "provider": "openrouter",
+      "modelId": "deepseek/deepseek-chat",
+      "label": "deepseek/deepseek-chat",
+      "tier": "balanced",
+      "caps": {
+        "tools": true,
+        "json": true,
+        "vision": false,
+        "reasoning": false
+      },
+      "contextWindow": 163840,
+      "verified": true,
+      "probe": {
+        "ttftMs": 3722,
+        "totalMs": 3723,
+        "toolCallOk": true,
+        "jsonOk": true,
+        "at": "2026-10-28T05:27:13.760Z"
+      }
+    },
+    {
+      "key": "openrouter:openai/gpt-5.2-chat",
+      "provider": "openrouter",
+      "modelId": "openai/gpt-5.2-chat",
+      "label": "openai/gpt-5.2-chat",
+      "tier": "strong",
+      "caps": {
+        "tools": false,
+        "json": false,
+        "vision": true,
+        "reasoning": false
+      },
+      "contextWindow": 128000,
+      "verified": false,
+      "probe": {
+        "ttftMs": -1,
+        "totalMs": -1,
+        "toolCallOk": false,
+        "jsonOk": false,
+        "at": "2026-10-28T05:27:15.516Z"
+      }
+    },
+    {
+      "key": "openrouter:openai/o3",
+      "provider": "openrouter",
+      "modelId": "openai/o3",
+      "label": "openai/o3",
+      "tier": "strong",
+      "caps": {
+        "tools": true,
+        "json": true,
+        "vision": true,
+        "reasoning": false
+      },
+      "contextWindow": 200000,
+      "verified": true,
+      "probe": {
+        "ttftMs": 1851,
+        "totalMs": 2042,
+        "toolCallOk": true,
+        "jsonOk": true,
+        "at": "2026-10-28T05:27:31.781Z"
+      }
+    },
+    {
+      "key": "openrouter:openai/o1",
+      "provider": "openrouter",
+      "modelId": "openai/o1",
+      "label": "openai/o1",
+      "tier": "strong",
+      "caps": {
+        "tools": false,
+        "json": false,
+        "vision": true,
+        "reasoning": false
+      },
+      "contextWindow": 200000,
+      "verified": false,
+      "probe": {
+        "ttftMs": -1,
+        "totalMs": -1,
+        "toolCallOk": false,
+        "jsonOk": false,
+        "at": "2026-10-28T05:27:34.711Z"
+      }
+    },
+    {
+      "key": "openrouter:liquid/lfm-2.5-2.6b:free",
+      "provider": "openrouter",
+      "modelId": "liquid/lfm-2.5-2.6b:free",
+      "label": "liquid/lfm-2.5-2.6b:free",
+      "tier": "balanced",
+      "caps": {
+        "tools": false,
+        "json": false,
+        "vision": false,
+        "reasoning": false
+      },
+      "contextWindow": 65536,
+      "verified": false,
+      "probe": {
+        "ttftMs": 1389,
+        "totalMs": 1392,
+        "toolCallOk": false,
+        "jsonOk": false,
+        "at": "2026-10-28T05:27:42.826Z"
+      }
+    },
+    {
+      "key": "openrouter:recursive/flint-v1.0:free",
+      "provider": "openrouter",
+      "modelId": "recursive/flint-v1.0:free",
+      "label": "recursive/flint-v1.0:free",
+      "tier": "balanced",
+      "caps": {
+        "tools": false,
+        "json": false,
+        "vision": false,
+        "reasoning": false
+      },
+      "contextWindow": 262144,
+      "verified": false,
+      "probe": {
+        "ttftMs": -1,
+        "totalMs": -1,
+        "toolCallOk": false,
+        "jsonOk": false,
+        "at": "2026-10-28T05:27:44.614Z"
+      }
+    },
+    {
+      "key": "groq:allam-2-7b",
+      "provider": "groq",
+      "modelId": "allam-2-7b",
+      "label": "allam-2-7b",
+      "tier": "fast",
+      "caps": {
+        "tools": false,
+        "json": true,
+        "vision": false,
+        "reasoning": false
+      },
+      "contextWindow": 4096,
+      "verified": true,
+      "probe": {
+        "ttftMs": 239,
+        "totalMs": 240,
+        "toolCallOk": false,
+        "jsonOk": true,
+        "at": "2026-10-28T05:27:46.677Z"
+      }
+    },
+    {
+      "key": "groq:qwen/qwen3.8-27b",
+      "provider": "groq",
+      "modelId": "qwen/qwen3.8-27b",
+      "label": "qwen/qwen3.8-27b",
+      "tier": "fast",
+      "caps": {
+        "tools": true,
+        "json": true,
+        "vision": false,
+        "reasoning": false
+      },
+      "contextWindow": 131072,
+      "verified": true,
+      "probe": {
+        "ttftMs": 353,
+        "totalMs": 354,
+        "toolCallOk": true,
+        "jsonOk": true,
+        "at": "2026-10-28T05:27:51.013Z"
+      }
+    },
+    {
+      "key": "groq:openai/gpt-oss-20b",
+      "provider": "groq",
+      "modelId": "openai/gpt-oss-20b",
+      "label": "openai/gpt-oss-20b",
+      "tier": "fast",
+      "caps": {
+        "tools": true,
+        "json": true,
+        "vision": false,
+        "reasoning": false
+      },
+      "contextWindow": 131072,
+      "verified": false,
+      "probe": {
+        "ttftMs": 507,
+        "totalMs": 563,
+        "toolCallOk": true,
+        "jsonOk": true,
+        "at": "2026-10-28T05:27:55.705Z"
+      }
+    },
+    {
+      "key": "groq:openai/gpt-oss-120b",
+      "provider": "groq",
+      "modelId": "openai/gpt-oss-120b",
+      "label": "openai/gpt-oss-120b",
+      "tier": "balanced",
+      "caps": {
+        "tools": true,
+        "json": true,
+        "vision": false,
+        "reasoning": false
+      },
+      "contextWindow": 131072,
+      "verified": true,
+      "probe": {
+        "ttftMs": 708,
+        "totalMs": 810,
+        "toolCallOk": true,
+        "jsonOk": true,
+        "at": "2026-10-28T05:28:02.894Z"
+      }
+    },
+    {
+      "key": "groq:canopylabs/orpheus-v1-english",
+      "provider": "groq",
+      "modelId": "canopylabs/orpheus-v1-english",
+      "label": "canopylabs/orpheus-v1-english",
+      "tier": "balanced",
+      "caps": {
+        "tools": false,
+        "json": false,
+        "vision": false,
+        "reasoning": false
+      },
+      "contextWindow": 4000,
+      "verified": false,
+      "probe": {
+        "ttftMs": -1,
+        "totalMs": -1,
+        "toolCallOk": false,
+        "jsonOk": false,
+        "at": "2026-10-28T05:28:03.865Z"
+      }
+    },
+    {
+      "key": "nvidia:google/gemma-3-4b-it",
+      "provider": "nvidia",
+      "modelId": "google/gemma-3-4b-it",
+      "label": "google/gemma-3-4b-it",
+      "tier": "fast",
+      "caps": {
+        "tools": false,
+        "json": false,
+        "vision": false,
+        "reasoning": false
+      },
+      "contextWindow": null,
+      "verified": false,
+      "probe": {
+        "ttftMs": -1,
+        "totalMs": -1,
+        "toolCallOk": false,
+        "jsonOk": false,
+        "at": "2026-10-28T05:28:05.609Z"
+      }
+    },
+    {
+      "key": "nvidia:google/gemma-3-12b-it",
+      "provider": "nvidia",
+      "modelId": "google/gemma-3-12b-it",
+      "label": "google/gemma-3-12b-it",
+      "tier": "fast",
+      "caps": {
+        "tools": false,
+        "json": false,
+        "vision": false,
+        "reasoning": false
+      },
+      "contextWindow": null,
+      "verified": false,
+      "probe": {
+        "ttftMs": -1,
+        "totalMs": -1,
+        "toolCallOk": false,
+        "jsonOk": false,
+        "at": "2026-10-28T05:28:06.626Z"
+      }
+    },
+    {
+      "key": "nvidia:zyphra/zamba2-7b-instruct",
+      "provider": "nvidia",
+      "modelId": "zyphra/zamba2-7b-instruct",
+      "label": "zyphra/zamba2-7b-instruct",
+      "tier": "fast",
+      "caps": {
+        "tools": false,
+        "json": false,
+        "vision": false,
+        "reasoning": false
+      },
+      "contextWindow": null,
+      "verified": false,
+      "probe": {
+        "ttftMs": -1,
+        "totalMs": -1,
+        "toolCallOk": false,
+        "jsonOk": false,
+        "at": "2026-10-28T05:28:07.238Z"
+      }
+    },
+    {
+      "key": "nvidia:ibm/granite-3.0-8b-instruct",
+      "provider": "nvidia",
+      "modelId": "ibm/granite-3.0-8b-instruct",
+      "label": "ibm/granite-3.0-8b-instruct",
+      "tier": "fast",
+      "caps": {
+        "tools": false,
+        "json": false,
+        "vision": false,
+        "reasoning": false
+      },
+      "contextWindow": null,
+      "verified": false,
+      "probe": {
+        "ttftMs": -1,
+        "totalMs": -1,
+        "toolCallOk": false,
+        "jsonOk": false,
+        "at": "2026-10-28T05:28:08.147Z"
+      }
+    },
+    {
+      "key": "nvidia:google/gemma-4-31b-it",
+      "provider": "nvidia",
+      "modelId": "google/gemma-4-31b-it",
+      "label": "google/gemma-4-31b-it",
+      "tier": "balanced",
+      "caps": {
+        "tools": false,
+        "json": false,
+        "vision": false,
+        "reasoning": false
+      },
+      "contextWindow": null,
+      "verified": false,
+      "probe": {
+        "ttftMs": -1,
+        "totalMs": -1,
+        "toolCallOk": false,
+        "jsonOk": false,
+        "at": "2026-10-28T05:28:53.160Z"
+      }
+    },
+    {
+      "key": "nvidia:databricks/dbrx-instruct",
+      "provider": "nvidia",
+      "modelId": "databricks/dbrx-instruct",
+      "label": "databricks/dbrx-instruct",
+      "tier": "balanced",
+      "caps": {
+        "tools": false,
+        "json": false,
+        "vision": false,
+        "reasoning": false
+      },
+      "contextWindow": null,
+      "verified": false,
+      "probe": {
+        "ttftMs": -1,
+        "totalMs": -1,
+        "toolCallOk": false,
+        "jsonOk": false,
+        "at": "2026-10-28T05:28:54.798Z"
+      }
+    },
+    {
+      "key": "nvidia:google/diffusiongemma-26b-a4b-it",
+      "provider": "nvidia",
+      "modelId": "google/diffusiongemma-26b-a4b-it",
+      "label": "google/diffusiongemma-26b-a4b-it",
+      "tier": "balanced",
+      "caps": {
+        "tools": true,
+        "json": false,
+        "vision": false,
+        "reasoning": false
+      },
+      "contextWindow": null,
+      "verified": true,
+      "probe": {
+        "ttftMs": -1,
+        "totalMs": 6580,
+        "toolCallOk": true,
+        "jsonOk": false,
+        "at": "2026-10-28T05:29:34.536Z"
+      }
+    },
+    {
+      "key": "nvidia:ai21labs/jamba-1.5-large-instruct",
+      "provider": "nvidia",
+      "modelId": "ai21labs/jamba-1.5-large-instruct",
+      "label": "ai21labs/jamba-1.5-large-instruct",
+      "tier": "balanced",
+      "caps": {
+        "tools": false,
+        "json": false,
+        "vision": false,
+        "reasoning": false
+      },
+      "contextWindow": null,
+      "verified": false,
+      "probe": {
+        "ttftMs": -1,
+        "totalMs": -1,
+        "toolCallOk": false,
+        "jsonOk": false,
+        "at": "2026-10-28T05:29:35.224Z"
+      }
+    },
+    {
+      "key": "nvidia:mistralai/mistral-large-2-instruct",
+      "provider": "nvidia",
+      "modelId": "mistralai/mistral-large-2-instruct",
+      "label": "mistralai/mistral-large-2-instruct",
+      "tier": "balanced",
+      "caps": {
+        "tools": false,
+        "json": false,
+        "vision": false,
+        "reasoning": false
+      },
+      "contextWindow": null,
+      "verified": false,
+      "probe": {
+        "ttftMs": -1,
+        "totalMs": -1,
+        "toolCallOk": false,
+        "jsonOk": false,
+        "at": "2026-10-28T05:29:36.585Z"
+      }
+    },
+    {
+      "key": "nvidia:nvidia/nemotron-4-340b-instruct",
+      "provider": "nvidia",
+      "modelId": "nvidia/nemotron-4-340b-instruct",
+      "label": "nvidia/nemotron-4-340b-instruct",
+      "tier": "strong",
+      "caps": {
+        "tools": false,
+        "json": false,
+        "vision": false,
+        "reasoning": false
+      },
+      "contextWindow": null,
+      "verified": false,
+      "probe": {
+        "ttftMs": -1,
+        "totalMs": -1,
+        "toolCallOk": false,
+        "jsonOk": false,
+        "at": "2026-10-28T05:29:37.406Z"
+      }
+    },
+    {
+      "key": "nvidia:moonshotai/kimi-k2.6",
+      "provider": "nvidia",
+      "modelId": "moonshotai/kimi-k2.6",
+      "label": "moonshotai/kimi-k2.6",
+      "tier": "strong",
+      "caps": {
+        "tools": false,
+        "json": false,
+        "vision": false,
+        "reasoning": false
+      },
+      "contextWindow": null,
+      "verified": false,
+      "probe": {
+        "ttftMs": -1,
+        "totalMs": -1,
+        "toolCallOk": false,
+        "jsonOk": false,
+        "at": "2026-10-28T05:29:38.456Z"
+      }
+    },
+    {
+      "key": "nvidia:nvidia/nemotron-3-super-120b-a12b",
+      "provider": "nvidia",
+      "modelId": "nvidia/nemotron-3-super-120b-a12b",
+      "label": "nvidia/nemotron-3-super-120b-a12b",
+      "tier": "strong",
+      "caps": {
+        "tools": false,
+        "json": false,
+        "vision": false,
+        "reasoning": false
+      },
+      "contextWindow": null,
+      "verified": false,
+      "probe": {
+        "ttftMs": -1,
+        "totalMs": -1,
+        "toolCallOk": false,
+        "jsonOk": false,
+        "at": "2026-10-28T05:29:38.822Z"
+      }
+    },
+    {
+      "key": "nvidia:meta/llama-3.2-11b-vision-instruct",
+      "provider": "nvidia",
+      "modelId": "meta/llama-3.2-11b-vision-instruct",
+      "label": "meta/llama-3.2-11b-vision-instruct",
+      "tier": "fast",
+      "caps": {
+        "tools": false,
+        "json": true,
+        "vision": false,
+        "reasoning": false
+      },
+      "contextWindow": null,
+      "verified": true,
+      "probe": {
+        "ttftMs": 1079,
+        "totalMs": 1080,
+        "toolCallOk": false,
+        "jsonOk": true,
+        "at": "2026-10-28T05:33:38.218Z"
+      }
+    },
+    {
+      "key": "nvidia:minimaxai/minimax-m3.1-flash",
+      "provider": "nvidia",
+      "modelId": "minimaxai/minimax-m3.1-flash",
+      "label": "minimaxai/minimax-m3.1-flash",
+      "tier": "fast",
+      "caps": {
+        "tools": true,
+        "json": false,
+        "vision": false,
+        "reasoning": false
+      },
+      "contextWindow": null,
+      "verified": true,
+      "probe": {
+        "ttftMs": 1444,
+        "totalMs": 2616,
+        "toolCallOk": true,
+        "jsonOk": false,
+        "at": "2026-10-28T05:34:10.070Z"
+      }
+    }
+  ]
+}

@@ -26,3 +26,40 @@
 - **next/font/google kept** for Geist; if `pnpm build` stalls on the font
   fetch (slow network), fall back to the system stack — spec allows
   "system/Geist/Inter stack" (rule 50).
+
+## 2026-10-28 — Phase 10 model gateway (docs pass)
+
+- **OpenRouter** — https://openrouter.ai/docs/api/reference/overview : base
+  `https://openrouter.ai/api/v1`, `Authorization: Bearer`, optional
+  `HTTP-Referer`/`X-OpenRouter-Title` app headers; OpenAI-normalised schema;
+  SSE stream may include `:` comment lines (ignored by parser);
+  `response_format` supports `json_schema`; `GET /models` returns rich fields
+  (context_length, supported_parameters) used for capability hints.
+- **Groq** — https://console.groq.com/docs/api-reference : base
+  `https://api.groq.com/openai/v1/chat/completions`; SSE ends with
+  `data: [DONE]`; `parallel_tool_calls`, `tool_choice` (incl. forced named
+  tool), `response_format` `json_object`/`json_schema`;
+  `max_completion_tokens` preferred over deprecated `max_tokens`; `GET
+  /openai/v1/models` exists.
+- **NVIDIA NIM** — https://docs.api.nvidia.com/nim/reference/llm-apis +
+  https://docs.nvidia.com/nim/large-language-models/latest/api-reference.html :
+  base `https://integrate.api.nvidia.com/v1`, `POST /chat/completions`
+  OpenAI-compatible with streaming + tool calling, `GET /v1/models`.
+- **Client design**: one `OpenAICompatClient` per provider; `fetch` injected
+  for fixture tests; SSE comments and keep-alives treated as stream activity
+  (reset idle timer).
+- **Probe results (2026-10-28)**: 13 verified of 28 candidates. Findings:
+  reasoning models (qwen3, gpt-oss) spend `max_tokens` on `delta.reasoning`
+  before content, so probes use generous ceilings and count reasoning toward
+  reachability; NIM free key has most catalog functions unprovisioned
+  (404 "not found for account") — provisioned models found by probing live:
+  `diffusiongemma-26b-a4b-it`, `llama-3.2-11b-vision-instruct`,
+  `minimax-m3.1-flash`; several NIM functions hang on cold start
+  (idle_timeout is a real probe failure, not a client bug).
+- **Failover semantics**: any pre-content error (incl. non-retryable like 401)
+  fails over to the next candidate; `retryable` only means "don't retry the
+  same model". Caller abort is the only terminal error.
+- **`server-only` boundary**: `env.ts` keeps the guard; `providers.ts` reads
+  `process.env` directly so tsx scripts can import it.
+- **tsx scripts**: no top-level await (tsx emits CJS); `.env` loaded manually
+  (tsx doesn't auto-load it like Next).

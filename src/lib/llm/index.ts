@@ -1,7 +1,7 @@
-/**
- * Multi-provider LLM gateway (OpenRouter / Groq / NVIDIA NIM).
- * Lands in phase 10 - see .devin/workflows/10-model-gateway.md and rule 20.
- */
-export type ProviderId = "openrouter" | "groq" | "nvidia";
-export type Tier = "fast" | "balanced" | "strong";
-export type RouteClass = "chat" | "research" | "reason" | "check";
+export * from "./types";
+export { OpenAICompatClient } from "./openai-compat";
+export type { ProviderConfig, ClientOptions, ListedModel } from "./openai-compat";
+export { PROVIDER_SPECS, makeClient, providerAvailable, providerKey } from "./providers";
+export { loadRegistry, verifiedModels, allModels, getModel } from "./registry";
+export { ModelRouter } from "./router";
+export type { ChatStreamEvent, RouterDeps } from "./router";
