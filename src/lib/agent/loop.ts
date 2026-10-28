@@ -142,7 +142,7 @@ export async function runLoop(
       const idx = full.lastIndexOf("↪");
       if (idx >= 0) {
         result.bridge = full.slice(idx + 1).trim() || null;
-        const pre = full.slice(0, idx);
+        const pre = full.slice(0, idx).replace(/\n?↪[^\n]*/g, ""); // strip stray ↪ lines too
         const unsent = pre.slice(streamed.length);
         if (unsent) sse.emit({ type: "token", text: unsent });
         result.answer = pre.trimEnd();

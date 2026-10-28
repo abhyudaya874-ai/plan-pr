@@ -5,7 +5,7 @@ import { PanelLeft, PanelRight, Send, Square, Trash2 } from "lucide-react";
 import { useChatStream } from "@/components/chat/useChatStream";
 import { Markdown } from "@/components/chat/Markdown";
 import { SourceChips } from "@/components/chat/SourceChips";
-import { StepsTimeline } from "@/components/chat/StepsTimeline";
+import { MiniDiff, StepsTimeline } from "@/components/chat/StepsTimeline";
 import { ModelPicker } from "@/components/chat/ModelPicker";
 import { Workbench } from "@/components/workbench/Workbench";
 import { Resizer, useResizable } from "@/components/Resizer";
@@ -326,6 +326,21 @@ function TurnView({
       {turn.steps.length > 1 || turn.toolCalls.length > 0 ? (
         <StepsTimeline steps={turn.steps} toolCalls={turn.toolCalls} sources={turn.sources} live={live} />
       ) : null}
+      {/* Devin-style: file diffs always visible inline, not buried in the timeline */}
+      {turn.fileChanges.map((c, i) => {
+        let add = 0;
+        let del = 0;
+        for (const l of c.diff.split("\n")) {
+          if (l.startsWith("+") && !l.startsWith("+++")) add++;
+          else if (l.startsWith("-") && !l.startsWith("---")) del++;
+        }
+        return (
+          <MiniDiff
+            key={i}
+            f={{ path: c.path, op: c.op, added: add, deleted: del, diff: c.diff }}
+          />
+        );
+      })}
       {turn.error ? (
         <div className="rounded-lg border border-red-900/50 bg-red-950/30 px-3 py-2 text-[13px] text-red-300">
           {turn.error}

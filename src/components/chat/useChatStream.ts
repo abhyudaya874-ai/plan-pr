@@ -152,6 +152,8 @@ export function applyEvent(turn: Turn, ev: Ev): Turn {
       return {
         ...turn,
         done: true,
+        // models sometimes emit a stray ↪ inside the answer body
+        text: turn.text.replace(/\n?↪[^\n]*$/, ""),
         cited: (ev.sources as number[]) ?? [],
       };
     case "error":

@@ -62,7 +62,9 @@ export async function GET(req: Request): Promise<Response> {
       } catch {
         meta = null;
       }
-      return { role: r.role, content: r.content, bridge: meta?.bridge ?? null };
+      // internal work-log stays in DB for context; strip it from display
+      const content = r.content.replace(/\n?\[files changed: [^\]]*\]/g, "");
+      return { role: r.role, content, bridge: meta?.bridge ?? null };
     });
   return Response.json({ messages: rows });
 }

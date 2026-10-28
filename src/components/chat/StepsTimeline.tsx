@@ -33,7 +33,7 @@ function ThinkDetail({ text }: { text: string }) {
 }
 
 /** Devin-style inline diff inside a tool-call card. */
-function MiniDiff({ f }: { f: { path: string; op: string; added: number; deleted: number; diff: string } }) {
+export function MiniDiff({ f }: { f: { path: string; op: string; added: number; deleted: number; diff: string } }) {
   const [expanded, setExpanded] = useState(false);
   const lines = f.diff.split("\n").filter((l) => !l.startsWith("diff ") && !l.startsWith("index "));
   const shown = expanded ? lines : lines.slice(0, 24);
