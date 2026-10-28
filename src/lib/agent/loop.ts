@@ -415,6 +415,9 @@ export async function runLoop(
           summary: summarize(exec.resultText),
           stats: stats.length ? stats : undefined,
           files: filesOut.length ? filesOut : undefined,
+          sourceUrls: execSources.length
+            ? [...new Set(execSources.map((s) => s.canonicalUrl))]
+            : undefined,
         });
         emitStep(stepKind, stepLabel(call.name, parsedArgs), exec.ok ? "done" : "error", undefined, stepT);
       }),

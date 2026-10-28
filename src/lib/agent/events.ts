@@ -30,7 +30,7 @@ export type ServerEvent =
   | { type: "source"; id: number; source: SourceRef }
   | { type: "token"; id: number; text: string }
   | { type: "tool_call"; id: number; callId?: string; name: string; args: unknown }
-  | { type: "tool_result"; id: number; toolCallId: string; ok: boolean; summary: string; stats?: string[]; files?: { path: string; op: string; added: number; deleted: number; diff: string }[] }
+  | { type: "tool_result"; id: number; toolCallId: string; ok: boolean; summary: string; stats?: string[]; files?: { path: string; op: string; added: number; deleted: number; diff: string }[]; sourceUrls?: string[] }
   | { type: "file_change"; id: number; path: string; op: "create" | "modify" | "delete"; before?: string; after?: string; diff: string; bytes: number; by: "agent" | "user"; t: number }
   | { type: "telemetry"; id: number; route: string; provider: string; model: string; ttftMs: number; totalMs: number; tokensIn: number; tokensOut: number; retries: number; hedged: boolean }
   | { type: "bridge"; id: number; text: string }

@@ -29,6 +29,13 @@ const TIER_RANK: Record<ModelEntry["tier"], number> = {
   strong: 2,
 };
 
+/**
+ * Process-global cooldowns: a router is constructed per request, but a model
+ * that 402s / keeps failing must stay cooled across requests, not just within
+ * one. Backoff per modelKey, capped at 60s.
+ */
+const GLOBAL_COOLDOWNS = new Map<string, { until: number; failures: number }>();
+
 export type ChatStreamEvent =
   | StreamEvent
   | RouterEvent
@@ -51,7 +58,7 @@ export class ModelRouter {
   private readonly maxAttempts: number;
   private readonly now: () => number;
   private readonly ewma = new Map<string, number>();
-  private readonly cooldowns = new Map<string, { until: number; failures: number }>();
+  private readonly cooldowns = GLOBAL_COOLDOWNS;
 
   constructor(deps: RouterDeps) {
     this.deps = deps;
@@ -193,6 +200,7 @@ export class ModelRouter {
 
     let attempts = 0;
     let yieldedContent = false;
+    let retriedIndex = -1; // candidate index that already got its one transient retry
 
     for (let i = 0; i < cands.length && attempts < this.maxAttempts; i++) {
       const entry = cands[i]!;
@@ -302,6 +310,19 @@ export class ModelRouter {
 
       if (finished) break;
       if (failed) {
+        // Transient limits clear in seconds: one same-model retry (2.5s) before
+        // switching — free-tier rate limits are the common case.
+        const transient =
+          failed.kind === "rate_limit" ||
+          failed.kind === "idle_timeout" ||
+          failed.kind === "timeout";
+        if (transient && retriedIndex !== i && failed.retryable !== false) {
+          retriedIndex = i;
+          await sleep(2500);
+          i--;
+          attempts--;
+          continue;
+        }
         this.markFailure(winnerEntry);
         const next = cands[i + 1];
         if (next && attempts < this.maxAttempts) {

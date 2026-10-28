@@ -324,7 +324,7 @@ function TurnView({
       <p className="mb-4 text-[15px] leading-7 text-zinc-200">{turn.userText}</p>
       <div className="mb-1 text-[13px] font-medium text-zinc-500">Pramaan</div>
       {turn.steps.length > 1 || turn.toolCalls.length > 0 ? (
-        <StepsTimeline steps={turn.steps} toolCalls={turn.toolCalls} live={live} />
+        <StepsTimeline steps={turn.steps} toolCalls={turn.toolCalls} sources={turn.sources} live={live} />
       ) : null}
       {turn.error ? (
         <div className="rounded-lg border border-red-900/50 bg-red-950/30 px-3 py-2 text-[13px] text-red-300">

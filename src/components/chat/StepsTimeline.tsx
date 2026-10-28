@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2, CircleDashed, XCircle } from "lucide-react";
-import type { StepEvent, ToolCallItem } from "./useChatStream";
+import { CheckCircle2, CircleDashed, ExternalLink, XCircle } from "lucide-react";
+import type { SourceRef, StepEvent, ToolCallItem } from "./useChatStream";
 
 const KIND_LABEL: Record<string, string> = {
   search: "Search",
@@ -102,15 +102,49 @@ function StatLine({ s }: { s: string }) {
   );
 }
 
+/** Source chip inside a tool-call card: [n] domain, popover + link. */
+function SourceChip({ s }: { s: SourceRef }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <span className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className="rounded-full border border-zinc-700 bg-zinc-900 px-1.5 py-0.5 text-[10px] text-zinc-400 transition hover:border-[#c9854a]/60 hover:text-[#c9854a]"
+      >
+        [{s.n}] {s.domain}
+      </button>
+      {open && (
+        <span className="absolute left-0 top-full z-30 mt-1 block w-64 rounded-lg border border-zinc-700 bg-zinc-900 p-2.5 text-left shadow-xl">
+          <a
+            href={s.url}
+            target="_blank"
+            rel="noreferrer"
+            className="mb-1 flex items-center gap-1 text-[11px] font-medium text-[#c9854a] hover:underline"
+          >
+            {s.title || s.url} <ExternalLink size={10} />
+          </a>
+          <span className="block text-[10.5px] leading-4 text-zinc-400">{s.snippet}</span>
+          <span className="mt-1 block text-[9.5px] text-zinc-600">
+            via {s.via} · {new Date(s.retrievedAt).toLocaleString()}
+          </span>
+        </span>
+      )}
+    </span>
+  );
+}
+
 export function StepsTimeline({
   steps,
   toolCalls,
+  sources,
   live,
 }: {
   steps: StepEvent[];
   toolCalls: ToolCallItem[];
+  sources?: SourceRef[];
   live: boolean;
 }) {
+  const byUrl = new Map((sources ?? []).map((s) => [s.canonicalUrl, s]));
   const [open, setOpen] = useState(false);
   const real = steps.filter((s) => s.kind !== "understand" || s.status !== "running");
   if (!real.length && !toolCalls.length) return null;
@@ -160,6 +194,26 @@ export function StepsTimeline({
                 )}
               </div>
               {t.stats?.map((s, j) => <StatLine key={j} s={s} />)}
+              {t.sourceUrls && t.sourceUrls.length > 0 && (
+                <div className="mt-1 flex flex-wrap gap-1">
+                  {t.sourceUrls.map((u, j) => {
+                    const ref = byUrl.get(u);
+                    return ref ? (
+                      <SourceChip key={j} s={ref} />
+                    ) : (
+                      <a
+                        key={j}
+                        href={u}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="rounded-full border border-zinc-800 px-1.5 py-0.5 text-[10px] text-zinc-500 hover:text-[#c9854a]"
+                      >
+                        {u.replace(/^https?:\/\//, "").slice(0, 32)}
+                      </a>
+                    );
+                  })}
+                </div>
+              )}
               {t.files?.map((f, j) => <MiniDiff key={j} f={f} />)}
             </div>
           ))}
