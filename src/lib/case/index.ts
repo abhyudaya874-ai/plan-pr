@@ -2,6 +2,7 @@ import { z } from "zod";
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { runtimePath } from "@/lib/paths";
 
 /**
  * Case repo (rule: case = repo, fact edit = commit).
@@ -50,7 +51,7 @@ export const commitSchema = z.object({
 });
 export type CaseCommit = z.infer<typeof commitSchema>;
 
-const ROOT = path.join(process.cwd(), "data", "cases");
+const ROOT = runtimePath("data", "cases");
 
 const caseDir = (caseId: string) => path.join(ROOT, caseId);
 const commitsDir = (caseId: string) => path.join(caseDir(caseId), "commits");

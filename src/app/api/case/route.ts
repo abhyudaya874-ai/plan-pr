@@ -15,6 +15,7 @@ import {
 import { runPipeline } from "@/lib/case/pipeline";
 import { approve, approvalValid } from "@/lib/case/approval";
 import { makeZip } from "@/lib/case/zip";
+import { runtimePath } from "@/lib/paths";
 
 const postSchema = z.discriminatedUnion("op", [
   z.object({
@@ -47,7 +48,7 @@ export async function GET(req: Request): Promise<Response> {
   // Evidence bundle export: real .zip of all case artifacts (I7 audit trail).
   if (url.searchParams.get("op") === "export") {
     if (!loadCase(caseId)) return Response.json({ error: "not_found" }, { status: 404 });
-    const dir = path.join(process.cwd(), "data", "cases", caseId);
+    const dir = runtimePath("data", "cases", caseId);
     const names = [
       "case.json", "plan.json", "gates.json", "draft.md",
       "receipt.json", "receipt.md", "evidence.csv", "commits.jsonl",
@@ -68,7 +69,7 @@ export async function GET(req: Request): Promise<Response> {
   if (!c) return Response.json({ error: "not_found" }, { status: 404 });
   const commits = listCommits(caseId);
   const verify = verifyChain(caseId);
-  const dir = path.join(process.cwd(), "data", "cases", caseId);
+  const dir = runtimePath("data", "cases", caseId);
   const readJson = (n: string) =>
     existsSync(path.join(dir, n))
       ? (JSON.parse(readFileSync(path.join(dir, n), "utf8")) as unknown)

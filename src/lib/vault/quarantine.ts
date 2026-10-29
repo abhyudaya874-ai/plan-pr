@@ -1,5 +1,6 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { runtimePath } from "@/lib/paths";
 
 /**
  * Source quarantine: a flag file listing schemeCode.field pairs whose source
@@ -7,7 +8,7 @@ import path from "node:path";
  * `unavailable` with reason `quarantined` — never a substitute value (I2).
  * Used by the missing-page challenge + injection quarantine in /policy.
  */
-const Q_PATH = path.join(process.cwd(), "data", "vault", "quarantine.json");
+const Q_PATH = runtimePath("data", "vault", "quarantine.json");
 
 interface QuarantineFile {
   entries: { key: string; reason: string; at: string; by: string }[];

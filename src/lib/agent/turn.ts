@@ -18,10 +18,11 @@ import { ModelRouter } from "@/lib/llm/router";
 import { loadRegistry, verifiedModels } from "@/lib/llm/registry";
 import type { ChatMessage, RouteMode } from "@/lib/llm/types";
 import { toolMap } from "@/lib/tools";
+import { runtimePath } from "@/lib/paths";
 
 function listWorkspaceFilesSafe(sessionId: string): string[] {
   try {
-    const dir = path.join(process.cwd(), "workspace", sessionId);
+    const dir = runtimePath("workspace", sessionId);
     return readdirSync(dir).slice(0, 20);
   } catch {
     return [];

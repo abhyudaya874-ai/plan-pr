@@ -3,6 +3,7 @@ import path from "node:path";
 import { z } from "zod";
 import type { PlannerFacts } from "@/lib/planner";
 import type { GateResult } from "./index";
+import { runtimePath } from "@/lib/paths";
 
 /**
  * Custom rule DSL — the adviser adds a gate in English-ish JSON; it is
@@ -38,7 +39,7 @@ export const customRuleSchema = z.object({
 });
 export type CustomRule = z.infer<typeof customRuleSchema>;
 
-const RULES_PATH = path.join(process.cwd(), "data", "policy", "custom-rules.json");
+const RULES_PATH = runtimePath("data", "policy", "custom-rules.json");
 
 export function loadCustomRules(): CustomRule[] {
   if (!existsSync(RULES_PATH)) return [];

@@ -4,6 +4,7 @@ import path from "node:path";
 import { approvalValid, loadReceipt } from "@/lib/case/approval";
 import { loadCase } from "@/lib/case";
 import { ClientView } from "@/components/client/ClientView";
+import { runtimePath } from "@/lib/paths";
 
 /**
  * Client view — read-only. Shows the approved draft ONLY when the approval
@@ -19,7 +20,7 @@ export default async function ClientPage({
   await connection(); // filesystem-backed, must render per-request
   const { caseId } = await params;
   const c = loadCase(caseId);
-  const dir = path.join(process.cwd(), "data", "cases", caseId);
+  const dir = runtimePath("data", "cases", caseId);
   const draft = existsSync(path.join(dir, "draft.md"))
     ? readFileSync(path.join(dir, "draft.md"), "utf8")
     : null;

@@ -1,8 +1,9 @@
 import Database from "better-sqlite3";
 import { mkdirSync } from "node:fs";
 import path from "node:path";
+import { runtimePath } from "@/lib/paths";
 
-const DB_PATH = path.join(process.cwd(), "data", "app.db");
+const DB_PATH = runtimePath("data", "app.db");
 
 let db: Database.Database | null = null;
 

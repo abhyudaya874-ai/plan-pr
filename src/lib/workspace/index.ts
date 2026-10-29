@@ -12,6 +12,7 @@ import {
   writeFileSync,
 } from "node:fs";
 import path from "node:path";
+import { runtimePath } from "@/lib/paths";
 
 export class WorkspaceError extends Error {
   constructor(
@@ -38,7 +39,7 @@ export interface FileChange {
   by: "agent" | "user";
 }
 
-const ROOT = path.join(process.cwd(), "workspace");
+const ROOT = runtimePath("workspace");
 const MAX_FILE = 2_000_000; // 2MB
 const SNAP_DIR = ".snap";
 

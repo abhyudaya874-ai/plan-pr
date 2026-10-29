@@ -7,6 +7,7 @@ import { DRAFT_A, fillSlots, lintNumbers, type LintResult, type SlotValue } from
 import { plannerPolicy } from "@/lib/policy";
 import { vaultFunds } from "@/lib/vault/load";
 import { loadCase, type PlanCase } from "./index";
+import { runtimePath } from "@/lib/paths";
 
 const inr = (n: number | null | undefined) =>
   n == null ? "unavailable" : `₹${n.toLocaleString("en-IN")}`;
@@ -108,7 +109,7 @@ export function runPipeline(caseId: string): PipelineResult | null {
   const lint = lintNumbers(draft, slots);
 
   const result = { plan, gates, draft, lint };
-  const dir = path.join(process.cwd(), "data", "cases", caseId);
+  const dir = runtimePath("data", "cases", caseId);
   writeFileSync(path.join(dir, "plan.json"), JSON.stringify(plan, null, 2) + "\n");
   writeFileSync(path.join(dir, "gates.json"), JSON.stringify(gates, null, 2) + "\n");
   writeFileSync(path.join(dir, "draft.md"), draft + "\n");

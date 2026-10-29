@@ -2,6 +2,7 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import type { PlanCase } from "./index";
 import type { ApprovalReceipt } from "./approval";
+import { runtimePath } from "@/lib/paths";
 
 /**
  * Decision-receipt artifacts written on approval:
@@ -11,7 +12,7 @@ import type { ApprovalReceipt } from "./approval";
  */
 
 export function writeReceiptArtifacts(caseId: string, c: PlanCase, receipt: ApprovalReceipt): void {
-  const dir = path.join(process.cwd(), "data", "cases", caseId);
+  const dir = runtimePath("data", "cases", caseId);
   const gates: { id: string; name: string; status: string; why?: string[] }[] = existsSync(
     path.join(dir, "gates.json"),
   )

@@ -3,6 +3,7 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { appendCommit, loadCase, type PlanCase } from "./index";
 import { writeReceiptArtifacts } from "./receipt";
+import { runtimePath } from "@/lib/paths";
 
 /**
  * Approval = advisory sign-off bound to a content fingerprint (I4).
@@ -21,7 +22,7 @@ export interface ApprovalReceipt {
   disclosure: string;
 }
 
-const caseDir = (id: string) => path.join(process.cwd(), "data", "cases", id);
+const caseDir = (id: string) => runtimePath("data", "cases", id);
 
 /**
  * Canonical content hash: facts (canonical JSON) + plan + gates + draft.
