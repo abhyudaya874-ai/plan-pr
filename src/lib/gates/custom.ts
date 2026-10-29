@@ -1,5 +1,4 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import path from "node:path";
 import { z } from "zod";
 import type { PlannerFacts } from "@/lib/planner";
 import type { GateResult } from "./index";

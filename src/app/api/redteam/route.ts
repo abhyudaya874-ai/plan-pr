@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { z } from "zod";
-import { ATTACKS, genericVerdict } from "@/lib/eval/redteam";
+import { ATTACKS, genericVerdict, normalizeAnswer } from "@/lib/eval/redteam";
 import { runTurn } from "@/lib/agent/turn";
 import { SseWriter, type ServerEvent } from "@/lib/agent/events";
 
@@ -57,9 +57,10 @@ export async function POST(req: Request): Promise<Response> {
   }
 
   const card = ATTACKS.find((a) => a.id === cardId);
+  const norm = normalizeAnswer(answer);
   const verdict = card
-    ? { pass: card.check(answer) === null && answer.trim().length >= 10, reason: card.check(answer) }
-    : genericVerdict(answer);
+    ? { pass: card.check(norm) === null && norm.trim().length >= 10, reason: card.check(norm) }
+    : genericVerdict(norm);
   const steps = captured.filter((e) => e.type === "step").length;
   return Response.json({
     verdict,

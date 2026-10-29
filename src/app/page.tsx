@@ -42,13 +42,14 @@ export default function Page() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  // init session + persisted model
+  // init session + persisted model (`?s=` deep-links a session for demos)
   useEffect(() => {
-    let sid = localStorage.getItem(LS_SESSION);
+    const fromUrl = new URLSearchParams(window.location.search).get("s");
+    let sid = fromUrl || localStorage.getItem(LS_SESSION);
     if (!sid) {
       sid = `s-${Math.random().toString(36).slice(2, 10)}`;
-      localStorage.setItem(LS_SESSION, sid);
     }
+    localStorage.setItem(LS_SESSION, sid);
     void Promise.resolve().then(() => {
       setSessionId(sid);
       setModelKey(localStorage.getItem(LS_MODEL) ?? "");

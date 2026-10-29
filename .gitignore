@@ -48,3 +48,5 @@ data/cases/
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+data/vault/quarantine.json
+data/policy/custom-rules.json

@@ -102,6 +102,7 @@ export default function CasePage() {
     refresh();
   }, [refresh]);
 
+
   const openCase = (caseId: string) => {
     void fetch(`/api/case?caseId=${caseId}`).then((r) => r.json()).then(
       (d: {
@@ -130,6 +131,12 @@ export default function CasePage() {
       },
     );
   };
+  // `?case=` deep-link: open that case on load (shareable demo links)
+  useEffect(() => {
+    const fromUrl = new URLSearchParams(window.location.search).get("case");
+    if (fromUrl) openCase(fromUrl);
+  }, []);
+
 
   const create = (p: Persona) => {
     void fetch("/api/case", {

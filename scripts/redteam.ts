@@ -5,43 +5,50 @@
  *   pnpm redteam
  */
 import { writeFileSync } from "node:fs";
-import { ATTACKS, type Attack } from "../src/lib/eval/redteam";
+import { ATTACKS, normalizeAnswer, type Attack } from "../src/lib/eval/redteam";
 
 const BASE = process.env.BASE ?? "http://localhost:3001";
 
 async function runOne(a: Attack, prompt: string): Promise<{ pass: boolean; reason: string | null; answer: string; bridge: string | null }> {
-  const res = await fetch(`${BASE}/api/chat`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ sessionId: `rt-${a.id}-${Math.abs(prompt.length * 7 + Date.now() % 97)}`, message: prompt, mode: "chat" }),
-  });
-  const events: { type: string; [k: string]: unknown }[] = [];
-  let answer = "";
-  let bridge: string | null = null;
-  const text = await res.text();
-  for (const line of text.split("\n")) {
-    if (!line.startsWith("data:")) continue;
-    try {
-      const e = JSON.parse(line.slice(5)) as { type: string; text?: string };
-      events.push(e);
-      if (e.type === "token") answer += e.text ?? "";
-      if (e.type === "bridge") bridge = e.text ?? null;
-    } catch { /* ignore bad lines */ }
+  const ask = async (): Promise<string> => {
+    const res = await fetch(`${BASE}/api/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId: `rt-${a.id}-${Math.abs(prompt.length * 7 + Date.now() % 97)}`, message: prompt, mode: "chat" }),
+    });
+    let answer = "";
+    const text = await res.text();
+    for (const line of text.split("\n")) {
+      if (!line.startsWith("data:")) continue;
+      try {
+        const e = JSON.parse(line.slice(5)) as { type: string; text?: string };
+        if (e.type === "token") answer += e.text ?? "";
+      } catch { /* ignore bad lines */ }
+    }
+    return answer;
+  };
+  let answer = await ask();
+  // Empty answer = usually provider rate-limiting during rapid scripted runs
+  // (degraded completion), not model compliance. Retry once after a pause.
+  if (answer.trim().length < 10) {
+    await new Promise((r) => setTimeout(r, 8000));
+    answer = await ask();
   }
-  const reason = a.check(answer);
-  const emptyFail = answer.trim().length < 10 ? "empty answer" : null;
-  return { pass: !(reason ?? emptyFail), reason: reason ?? emptyFail, answer: answer.slice(0, 400), bridge };
+  // empty answer = rate-limit artifact; report it as such, not as a compliance fail
+  const norm = normalizeAnswer(answer);
+  const reason = norm.trim().length < 10 ? "rate_limited (empty answer)" : a.check(norm);
+  return { pass: !reason, reason, answer: answer.slice(0, 400), bridge: null };
 }
 
 async function main() {
   const results = [];
   for (const a of ATTACKS) {
     const variants = [a.prompt, ...a.paraphrases];
-    const runs: { prompt: string; pass: boolean; reason: string | null }[] = [];
+    const runs: { prompt: string; pass: boolean; reason: string | null; answer?: string }[] = [];
     for (const p of variants) {
       try {
         const r = await runOne(a, p);
-        runs.push({ prompt: p, pass: r.pass, reason: r.reason });
+        runs.push({ prompt: p, pass: r.pass, reason: r.reason, answer: r.answer });
       } catch (e) {
         runs.push({ prompt: p, pass: false, reason: `error: ${(e as Error).message.slice(0, 60)}` });
       }
